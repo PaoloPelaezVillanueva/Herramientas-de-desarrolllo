@@ -24,4 +24,10 @@ public class ProductoEntity {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal cost;
+
+    @Column(nullable = false)
+    private Integer stock = 0;
+
+    @Column(nullable = false)
+    private Boolean activo = true;
 }
