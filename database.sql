@@ -1,0 +1,132 @@
+DROP DATABASE IF EXISTS tambo_db;
+CREATE DATABASE tambo_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE tambo_db;
+
+CREATE TABLE role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    role VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lastname VARCHAR(100) NOT NULL,
+    user VARCHAR(100) NOT NULL,
+    password VARCHAR(100),
+    role BIGINT NOT NULL,
+    CONSTRAINT uq_users_user UNIQUE (user),
+    CONSTRAINT fk_users_role FOREIGN KEY (role) REFERENCES role(id)
+);
+
+CREATE TABLE clients (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    lastname VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    address VARCHAR(200) NOT NULL,
+    dni VARCHAR(10) NOT NULL,
+    CONSTRAINT uq_clients_email UNIQUE (email)
+);
+
+CREATE TABLE products (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    description VARCHAR(250) NOT NULL,
+    cost DECIMAL(10,2) NOT NULL DEFAULT 0.00
+);
+
+CREATE TABLE sales (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    client BIGINT,
+    date DATETIME NOT NULL,
+    user BIGINT NOT NULL,
+    CONSTRAINT fk_sales_client FOREIGN KEY (client) REFERENCES clients(id),
+    CONSTRAINT fk_sales_user FOREIGN KEY (user) REFERENCES users(id)
+);
+
+CREATE TABLE sale_detail (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sale BIGINT NOT NULL,
+    product BIGINT NOT NULL,
+    quantity BIGINT NOT NULL DEFAULT 1,
+    subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    CONSTRAINT fk_sale_detail_sale FOREIGN KEY (sale) REFERENCES sales(id),
+    CONSTRAINT fk_sale_detail_product FOREIGN KEY (product) REFERENCES products(id)
+);
+
+INSERT INTO role (role) VALUES ('admin'), ('user');
+
+INSERT INTO users (name, lastname, user, password, role) VALUES
+('Marcos', 'Gomez', 'mgomez', '123456', 1),
+('Carlos', 'Ramírez', 'cramirez', '123456', 2),
+('María', 'Torres', 'mtorres', '123456', 2);
+
+INSERT INTO clients (name, lastname, email, address, dni) VALUES
+('Juan', 'Pérez', 'juan.perez@gmail.com', 'Av. Los Olivos 123, Lima', '72845612'),
+('Lucía', 'Fernández', 'lucia.fernandez@gmail.com', 'Jr. Las Flores 456, Lima', '74561238'),
+('Diego', 'Ramírez', 'diego.ramirez@gmail.com', 'Av. Brasil 789, Lima', '71234589');
+
+INSERT INTO products (name, description, cost) VALUES
+('Inca Kola 500ml', 'Gaseosa Inca Kola de 500ml', 2.50),
+('Coca Cola 500ml', 'Gaseosa Coca Cola de 500ml', 2.50),
+('Agua San Luis 625ml', 'Agua mineral sin gas de 625ml', 1.80),
+('Papas Lays Clásicas 40g', 'Papas fritas Lays sabor clásico de 40g', 2.50),
+('Sublime Chocolate 30g', 'Chocolate Sublime con maní de 30g', 2.00),
+('Galletas Oreo 36g', 'Galletas Oreo con relleno de vainilla', 2.20),
+('Detergente Bolívar 400g', 'Detergente en polvo Bolívar de 400g', 4.90),
+('Papel Higiénico Elite 4 rollos', 'Paquete de papel higiénico Elite de 4 rollos', 8.50),
+('Leche Gloria 1L', 'Leche evaporada Gloria de 1 litro', 4.50),
+('Atún Florida 170g', 'Lata de atún Florida de 170g', 5.90);
+
+INSERT INTO sales (client, date, user) VALUES
+(1, '2026-08-25 09:15:00', 2),
+(NULL, '2026-08-25 10:30:00', 2),
+(2, '2026-08-25 12:45:00', 3),
+(NULL, '2026-08-26 08:20:00', 2),
+(3, '2026-08-26 14:10:00', 3),
+(NULL, '2026-08-27 16:30:00', 2),
+(1, '2026-08-28 11:05:00', 3),
+(NULL, '2026-08-29 18:40:00', 2),
+(2, '2026-08-30 13:25:00', 3),
+(NULL, '2026-08-31 20:15:00', 2);
+
+INSERT INTO sale_detail (sale, product, quantity, subtotal) VALUES
+-- Venta 1 - Juan Pérez
+(1, 1, 2, 5.00),
+(1, 5, 2, 4.00),
+(1, 6, 1, 2.20),
+-- Venta 2 - Sin cliente
+(2, 2, 1, 2.50),
+(2, 4, 1, 2.50),
+(2, 3, 1, 1.80),
+-- Venta 3 - Lucía Fernández
+(3, 9, 2, 9.00),
+(3, 10, 1, 5.90),
+(3, 6, 2, 4.40),
+-- Venta 4 - Sin cliente
+(4, 1, 1, 2.50),
+(4, 5, 1, 2.00),
+-- Venta 5 - Diego Ramírez
+(5, 7, 1, 4.90),
+(5, 8, 1, 8.50),
+(5, 9, 1, 4.50),
+-- Venta 6 - Sin cliente
+(6, 4, 2, 5.00),
+(6, 6, 1, 2.20),
+(6, 3, 1, 1.80),
+-- Venta 7 - Juan Pérez
+(7, 2, 2, 5.00),
+(7, 5, 3, 6.00),
+(7, 10, 1, 5.90),
+-- Venta 8 - Sin cliente
+(8, 1, 1, 2.50),
+(8, 3, 2, 3.60),
+(8, 4, 1, 2.50),
+-- Venta 9 - Lucía Fernández
+(9, 7, 2, 9.80),
+(9, 8, 1, 8.50),
+(9, 9, 2, 9.00),
+-- Venta 10 - Sin cliente
+(10, 2, 1, 2.50),
+(10, 5, 2, 4.00),
+(10, 6, 1, 2.20);
