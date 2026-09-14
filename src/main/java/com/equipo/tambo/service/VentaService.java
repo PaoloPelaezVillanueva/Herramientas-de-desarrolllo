@@ -1,9 +1,9 @@
-package com.equipo.tambo.venta.service;
+package com.equipo.tambo.service;
 
-import com.equipo.tambo.venta.dto.VentaRequest;
-import com.equipo.tambo.venta.dto.VentaResponse;
-import com.equipo.tambo.venta.entity.VentaEntity;
-import com.equipo.tambo.venta.repository.VentaRepository;
+import com.equipo.tambo.dto.VentaRequest;
+import com.equipo.tambo.dto.VentaResponse;
+import com.equipo.tambo.entity.VentaEntity;
+import com.equipo.tambo.repository.VentaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

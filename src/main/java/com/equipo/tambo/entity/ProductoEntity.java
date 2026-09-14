@@ -1,4 +1,4 @@
-package com.equipo.tambo.producto.entity;
+package com.equipo.tambo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 

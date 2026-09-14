@@ -1,6 +1,6 @@
-package com.equipo.tambo.venta.repository;
+package com.equipo.tambo.repository;
 
-import com.equipo.tambo.venta.entity.VentaEntity;
+import com.equipo.tambo.entity.VentaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,9 +1,9 @@
-package com.equipo.tambo.producto.service;
+package com.equipo.tambo.service;
 
-import com.equipo.tambo.producto.dto.ProductoRequest;
-import com.equipo.tambo.producto.dto.ProductoResponse;
-import com.equipo.tambo.producto.entity.ProductoEntity;
-import com.equipo.tambo.producto.repository.ProductoRepository;
+import com.equipo.tambo.dto.ProductoRequest;
+import com.equipo.tambo.dto.ProductoResponse;
+import com.equipo.tambo.entity.ProductoEntity;
+import com.equipo.tambo.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.equipo.tambo.venta.dto;
+package com.equipo.tambo.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

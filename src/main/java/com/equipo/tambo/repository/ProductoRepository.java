@@ -1,6 +1,6 @@
-package com.equipo.tambo.producto.repository;
+package com.equipo.tambo.repository;
 
-import com.equipo.tambo.producto.entity.ProductoEntity;
+import com.equipo.tambo.entity.ProductoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductoRepository

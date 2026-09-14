@@ -1,8 +1,8 @@
-package com.equipo.tambo.producto.controller;
+package com.equipo.tambo.controller;
 
-import com.equipo.tambo.producto.dto.ProductoRequest;
-import com.equipo.tambo.producto.dto.ProductoResponse;
-import com.equipo.tambo.producto.service.ProductoService;
+import com.equipo.tambo.dto.ProductoRequest;
+import com.equipo.tambo.dto.ProductoResponse;
+import com.equipo.tambo.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
