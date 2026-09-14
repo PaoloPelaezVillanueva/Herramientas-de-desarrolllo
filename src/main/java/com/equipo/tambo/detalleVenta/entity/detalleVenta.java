@@ -1,35 +1,31 @@
-package com.abarrotes.entity;
+package com.equipo.tambo.detalleventa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
-@Table(name = "detalle_venta")
+@Table(name = "sale_detail")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class DetalleVenta {
+public class DetalleVentaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idDetalleVenta;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_venta", nullable = false)
-    private Venta venta;
+    @Column(name = "sale", nullable = false)
+    private Long idVenta;
 
-    @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
-    private Producto producto;
+    @Column(name = "product", nullable = false)
+    private Long idProducto;
 
-    @Column(nullable = false)
-    private Integer cantidad;
+    @Column(name = "quantity", nullable = false)
+    private Long cantidad;
 
-    @Column(nullable = false)
-    private Double precioUnitario;
-
-    @Column(nullable = false)
-    private Double subtotal;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal subtotal;
 }

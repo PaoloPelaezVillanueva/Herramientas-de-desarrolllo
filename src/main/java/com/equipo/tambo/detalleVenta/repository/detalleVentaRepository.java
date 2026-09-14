@@ -8,6 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface DetalleVentaRepository
         extends JpaRepository<DetalleVenta, Long> {
 
-    // Métodos personalizados (opcional)
-
 }
