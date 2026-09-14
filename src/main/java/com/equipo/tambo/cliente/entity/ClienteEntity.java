@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "clients")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,10 +16,10 @@ public class ClienteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 100)
     private String nombre;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "lastname", nullable = false, length = 100)
     private String apellido;
 
     @Column(nullable = false, unique = true, length = 8)
@@ -28,6 +28,6 @@ public class ClienteEntity {
     @Column(length = 150)
     private String email;
 
-    @Column(length = 20)
-    private String telefono;
+    @Column(name = "address", length = 255)
+    private String direccion;
 }

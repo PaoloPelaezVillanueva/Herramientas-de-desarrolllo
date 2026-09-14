@@ -4,7 +4,9 @@ import com.equipo.tambo.cliente.dto.ClienteRequest;
 import com.equipo.tambo.cliente.dto.ClienteResponse;
 import com.equipo.tambo.cliente.entity.ClienteEntity;
 import com.equipo.tambo.cliente.repository.ClienteRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,40 +27,38 @@ public class ClienteService {
 
     public ClienteResponse obtenerPorId(Long id) {
         ClienteEntity cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id));
         return convertirAResponse(cliente);
     }
 
     public ClienteResponse crear(ClienteRequest request) {
         if (clienteRepository.existsByDni(request.getDni())) {
-            throw new IllegalArgumentException("El DNI " + request.getDni() + " ya está registrado.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya está registrado.");
         }
-        ClienteEntity entity = convertirAEntity(request);
-        ClienteEntity guardado = clienteRepository.save(entity);
+        ClienteEntity guardado = clienteRepository.save(convertirAEntity(request));
         return convertirAResponse(guardado);
     }
 
     public ClienteResponse actualizar(Long id, ClienteRequest request) {
         ClienteEntity existente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id));
 
         if (clienteRepository.existsByDniAndIdNot(request.getDni(), id)) {
-            throw new IllegalArgumentException("El DNI " + request.getDni() + " ya pertenece a otro cliente.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya pertenece a otro cliente.");
         }
 
         existente.setNombre(request.getNombre());
         existente.setApellido(request.getApellido());
         existente.setDni(request.getDni());
         existente.setEmail(request.getEmail());
-        existente.setTelefono(request.getTelefono());
+        existente.setDireccion(request.getDireccion());
 
-        ClienteEntity actualizado = clienteRepository.save(existente);
-        return convertirAResponse(actualizado);
+        return convertirAResponse(clienteRepository.save(existente));
     }
 
     public void eliminar(Long id) {
         if (!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Cliente no encontrado con id: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id);
         }
         clienteRepository.deleteById(id);
     }
@@ -70,7 +70,7 @@ public class ClienteService {
         response.setApellido(entity.getApellido());
         response.setDni(entity.getDni());
         response.setEmail(entity.getEmail());
-        response.setTelefono(entity.getTelefono());
+        response.setDireccion(entity.getDireccion());
         return response;
     }
 
@@ -80,7 +80,7 @@ public class ClienteService {
         entity.setApellido(request.getApellido());
         entity.setDni(request.getDni());
         entity.setEmail(request.getEmail());
-        entity.setTelefono(request.getTelefono());
+        entity.setDireccion(request.getDireccion());
         return entity;
     }
 }
