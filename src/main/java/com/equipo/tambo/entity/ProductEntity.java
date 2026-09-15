@@ -20,7 +20,7 @@ public class ProductEntity {
     private String name;
 
     @Column(length = 500)
-    private String descripcion;
+    private String description;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal cost;
@@ -29,5 +29,5 @@ public class ProductEntity {
     private Integer stock = 0;
 
     @Column(nullable = false)
-    private Boolean activo = true;
+    private Boolean active = true;
 }
