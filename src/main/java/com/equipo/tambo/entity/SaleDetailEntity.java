@@ -17,14 +17,14 @@ public class SaleDetailEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sale", nullable = false)
-    private Long idVenta;
+    @Column(nullable = false)
+    private Long sale;
 
-    @Column(name = "product", nullable = false)
-    private Long idProducto;
+    @Column(nullable = false)
+    private Long product;
 
-    @Column(name = "quantity", nullable = false)
-    private Long cantidad;
+    @Column(nullable = false)
+    private Long quantity;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
