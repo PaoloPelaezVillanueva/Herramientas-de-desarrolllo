@@ -12,12 +12,12 @@ import lombok.Setter;
 public class SaleDetailRequest {
 
     @NotNull(message = "La venta es obligatoria")
-    private Long idVenta;
+    private Long sale;
 
     @NotNull(message = "El producto es obligatorio")
-    private Long idProducto;
+    private Long product;
 
     @NotNull(message = "La cantidad es obligatoria")
     @Positive(message = "La cantidad debe ser mayor que cero")
-    private Long cantidad;
+    private Long quantity;
 }

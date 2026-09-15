@@ -1,5 +1,7 @@
 package com.equipo.tambo.dto;
 
+import com.equipo.tambo.entity.ProductEntity;
+import com.equipo.tambo.entity.SaleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +16,9 @@ import java.math.BigDecimal;
 public class SaleDetailResponse {
 
     private Long id;
-    private Long idVenta;
-    private Long idProducto;
-    private Long cantidad;
+    private SaleEntity sale;
+    private ProductEntity product;
+    private Long quantity;
     private BigDecimal subtotal;
 
 
