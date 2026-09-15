@@ -1,8 +1,8 @@
 package com.equipo.tambo.controller;
 
-import com.equipo.tambo.dto.ProductoRequest;
-import com.equipo.tambo.dto.ProductoResponse;
-import com.equipo.tambo.service.ProductoService;
+import com.equipo.tambo.dto.ProductRequest;
+import com.equipo.tambo.dto.ProductResponse;
+import com.equipo.tambo.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,27 +14,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/productos")
 @RequiredArgsConstructor
-public class ProductoController {
+public class ProductController {
 
-    private final ProductoService productoService;
+    private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<ProductoResponse>> listar() {
-        return ResponseEntity.ok(productoService.listar());
+    public ResponseEntity<List<ProductResponse>> listar() {
+        return ResponseEntity.ok(productService.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoResponse> buscarPorId(
+    public ResponseEntity<ProductResponse> buscarPorId(
             @PathVariable Long id
     ) {
-        return ResponseEntity.ok(productoService.buscarPorId(id));
+        return ResponseEntity.ok(productService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<ProductoResponse> crear(
-            @Valid @RequestBody ProductoRequest request
+    public ResponseEntity<ProductResponse> crear(
+            @Valid @RequestBody ProductRequest request
     ) {
-        ProductoResponse productoCreado = productoService.crear(request);
+        ProductResponse productoCreado = productService.crear(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -42,12 +42,12 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoResponse> actualizar(
+    public ResponseEntity<ProductResponse> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody ProductoRequest request
+            @Valid @RequestBody ProductRequest request
     ) {
         return ResponseEntity.ok(
-                productoService.actualizar(id, request)
+                productService.actualizar(id, request)
         );
     }
 
@@ -55,7 +55,7 @@ public class ProductoController {
     public ResponseEntity<Void> eliminar(
             @PathVariable Long id
     ) {
-        productoService.eliminar(id);
+        productService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 }

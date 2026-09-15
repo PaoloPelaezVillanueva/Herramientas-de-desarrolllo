@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class VentaRequest {
+public class SaleRequest {
     
     private Long clienteId; 
     

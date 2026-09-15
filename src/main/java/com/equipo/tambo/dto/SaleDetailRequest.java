@@ -1,4 +1,4 @@
-package com.equipo.tambo.detalleventa.dto;
+package com.equipo.tambo.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DetalleVentaRequest {
+public class SaleDetailRequest {
 
     @NotNull(message = "La venta es obligatoria")
     private Long idVenta;

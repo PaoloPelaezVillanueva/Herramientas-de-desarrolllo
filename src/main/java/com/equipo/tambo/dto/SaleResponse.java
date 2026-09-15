@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class VentaResponse {
+public class SaleResponse {
     
     private Long id;
     private Long clienteId;

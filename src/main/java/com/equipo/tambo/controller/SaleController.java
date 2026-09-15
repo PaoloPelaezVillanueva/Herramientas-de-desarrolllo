@@ -1,8 +1,8 @@
 package com.equipo.tambo.controller;
 
-import com.equipo.tambo.dto.VentaRequest;
-import com.equipo.tambo.dto.VentaResponse;
-import com.equipo.tambo.service.VentaService;
+import com.equipo.tambo.dto.SaleRequest;
+import com.equipo.tambo.dto.SaleResponse;
+import com.equipo.tambo.service.SaleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,27 +14,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ventas")
 @RequiredArgsConstructor
-public class VentaController {
+public class SaleController {
 
-    private final VentaService ventaService;
+    private final SaleService saleService;
 
     @GetMapping
-    public ResponseEntity<List<VentaResponse>> listar() {
-        return ResponseEntity.ok(ventaService.listar());
+    public ResponseEntity<List<SaleResponse>> listar() {
+        return ResponseEntity.ok(saleService.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VentaResponse> buscarPorId(
+    public ResponseEntity<SaleResponse> buscarPorId(
             @PathVariable Long id
     ) {
-        return ResponseEntity.ok(ventaService.buscarPorId(id));
+        return ResponseEntity.ok(saleService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<VentaResponse> crear(
-            @Valid @RequestBody VentaRequest request
+    public ResponseEntity<SaleResponse> crear(
+            @Valid @RequestBody SaleRequest request
     ) {
-        VentaResponse ventaCreada = ventaService.crear(request);
+        SaleResponse ventaCreada = saleService.crear(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -42,12 +42,12 @@ public class VentaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VentaResponse> actualizar(
+    public ResponseEntity<SaleResponse> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody VentaRequest request
+            @Valid @RequestBody SaleRequest request
     ) {
         return ResponseEntity.ok(
-                ventaService.actualizar(id, request)
+                saleService.actualizar(id, request)
         );
     }
 
@@ -55,7 +55,7 @@ public class VentaController {
     public ResponseEntity<Void> eliminar(
             @PathVariable Long id
     ) {
-        ventaService.eliminar(id);
+        saleService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 }
