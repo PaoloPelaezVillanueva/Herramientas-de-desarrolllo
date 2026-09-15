@@ -1,4 +1,4 @@
-package com.equipo.tambo.producto.dto;
+package com.equipo.tambo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductoResponse {
+public class ProductResponse {
 
     private Long id;
 

@@ -1,4 +1,4 @@
-package com.equipo.tambo.detalleventa.entity;
+package com.equipo.tambo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetalleVentaEntity {
+public class SaleDetailEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

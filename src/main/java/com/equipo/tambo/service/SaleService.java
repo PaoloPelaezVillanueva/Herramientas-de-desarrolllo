@@ -1,9 +1,9 @@
-package com.equipo.tambo.venta.service;
+package com.equipo.tambo.service;
 
-import com.equipo.tambo.venta.dto.VentaRequest;
-import com.equipo.tambo.venta.dto.VentaResponse;
-import com.equipo.tambo.venta.entity.VentaEntity;
-import com.equipo.tambo.venta.repository.VentaRepository;
+import com.equipo.tambo.dto.SaleRequest;
+import com.equipo.tambo.dto.SaleResponse;
+import com.equipo.tambo.entity.SaleEntity;
+import com.equipo.tambo.repository.SaleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,46 +17,46 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class VentaService {
+public class SaleService {
 
-    private final VentaRepository ventaRepository;
+    private final SaleRepository saleRepository;
 
-    public List<VentaResponse> listar() {
-        return ventaRepository.findAll()
+    public List<SaleResponse> listar() {
+        return saleRepository.findAll()
                 .stream()
                 .map(this::convertirAResponse)
                 .collect(Collectors.toList());
     }
 
-    public VentaResponse buscarPorId(Long id) {
+    public SaleResponse buscarPorId(Long id) {
         return convertirAResponse(obtenerVenta(id));
     }
 
     @Transactional
-    public VentaResponse crear(VentaRequest request) {
-        VentaEntity venta = new VentaEntity();
+    public SaleResponse crear(SaleRequest request) {
+        SaleEntity venta = new SaleEntity();
         copiarDatos(request, venta);
         venta.setDate(LocalDateTime.now());
 
-        return convertirAResponse(ventaRepository.save(venta));
+        return convertirAResponse(saleRepository.save(venta));
     }
 
     @Transactional
-    public VentaResponse actualizar(Long id, VentaRequest request) {
-        VentaEntity venta = obtenerVenta(id);
+    public SaleResponse actualizar(Long id, SaleRequest request) {
+        SaleEntity venta = obtenerVenta(id);
         copiarDatos(request, venta);
 
-        return convertirAResponse(ventaRepository.save(venta));
+        return convertirAResponse(saleRepository.save(venta));
     }
 
     @Transactional
     public void eliminar(Long id) {
-        VentaEntity venta = obtenerVenta(id);
-        ventaRepository.delete(venta);
+        SaleEntity venta = obtenerVenta(id);
+        saleRepository.delete(venta);
     }
 
-    private VentaEntity obtenerVenta(Long id) {
-        return ventaRepository.findById(id)
+    private SaleEntity obtenerVenta(Long id) {
+        return saleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró la venta con ID " + id
@@ -64,15 +64,15 @@ public class VentaService {
     }
 
     private void copiarDatos(
-            VentaRequest request,
-            VentaEntity venta
+            SaleRequest request,
+            SaleEntity venta
     ) {
         venta.setClienteId(request.getClienteId());
         venta.setUsuarioId(request.getUsuarioId());
     }
 
-    private VentaResponse convertirAResponse(VentaEntity venta) {
-        return new VentaResponse(
+    private SaleResponse convertirAResponse(SaleEntity venta) {
+        return new SaleResponse(
                 venta.getId(),
                 venta.getClienteId(),
                 venta.getUsuarioId(),

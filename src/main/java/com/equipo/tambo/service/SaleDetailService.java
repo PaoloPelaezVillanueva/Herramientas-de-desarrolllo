@@ -1,9 +1,9 @@
-package com.equipo.tambo.detalleventa.service;
+package com.equipo.tambo.service;
 
-import com.equipo.tambo.detalleventa.dto.DetalleVentaRequest;
-import com.equipo.tambo.detalleventa.dto.DetalleVentaResponse;
-import com.equipo.tambo.detalleventa.entity.DetalleVentaEntity;
-import com.equipo.tambo.detalleventa.repository.DetalleVentaRepository;
+import com.equipo.tambo.dto.SaleDetailRequest;
+import com.equipo.tambo.entity.SaleDetailEntity;
+import com.equipo.tambo.repository.SaleDetailRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,60 +16,60 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class DetalleVentaService {
+public class SaleDetailService {
 
-    private final DetalleVentaRepository detalleVentaRepository;
+    private final SaleDetailRepository saleDetailRepository;
 
-    public List<DetalleVentaResponse> listar() {
-        return detalleVentaRepository.findAll()
+    public List<com.equipo.tambo.dto.SaleDetailResponse> listar() {
+        return saleDetailRepository.findAll()
                 .stream()
                 .map(this::convertirAResponse)
                 .collect(Collectors.toList());
     }
 
-    public DetalleVentaResponse buscarPorId(Long id) {
+    public com.equipo.tambo.dto.SaleDetailResponse buscarPorId(Long id) {
         return convertirAResponse(obtenerDetalleVenta(id));
     }
 
     @Transactional
-    public DetalleVentaResponse crear(DetalleVentaRequest request) {
+    public com.equipo.tambo.dto.SaleDetailResponse crear(@Valid SaleDetailRequest request) {
 
-        DetalleVentaEntity detalleVenta = new DetalleVentaEntity();
+        SaleDetailEntity detalleVenta = new SaleDetailEntity();
 
         copiarDatos(request, detalleVenta);
 
         return convertirAResponse(
-                detalleVentaRepository.save(detalleVenta)
+                saleDetailRepository.save(detalleVenta)
         );
     }
 
     @Transactional
-    public DetalleVentaResponse actualizar(
+    public com.equipo.tambo.dto.SaleDetailResponse actualizar(
             Long id,
-            DetalleVentaRequest request
+            com.equipo.tambo.dto.SaleDetailRequest request
     ) {
 
-        DetalleVentaEntity detalleVenta = obtenerDetalleVenta(id);
+        SaleDetailEntity detalleVenta = obtenerDetalleVenta(id);
 
         copiarDatos(request, detalleVenta);
 
         return convertirAResponse(
-                detalleVentaRepository.save(detalleVenta)
+                saleDetailRepository.save(detalleVenta)
         );
     }
 
     @Transactional
     public void eliminar(Long id) {
 
-        DetalleVentaEntity detalleVenta =
+        SaleDetailEntity saleDetail =
                 obtenerDetalleVenta(id);
 
-        detalleVentaRepository.delete(detalleVenta);
+        saleDetailRepository.delete(saleDetail);
     }
 
-    private DetalleVentaEntity obtenerDetalleVenta(Long id) {
+    private SaleDetailEntity obtenerDetalleVenta(Long id) {
 
-        return detalleVentaRepository.findById(id)
+        return saleDetailRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el detalle de venta con ID " + id
@@ -77,8 +77,8 @@ public class DetalleVentaService {
     }
 
     private void copiarDatos(
-            DetalleVentaRequest request,
-            DetalleVentaEntity detalleVenta
+            com.equipo.tambo.dto.SaleDetailRequest request,
+            SaleDetailEntity detalleVenta
     ) {
 
         detalleVenta.setIdVenta(request.getIdVenta());
@@ -88,11 +88,11 @@ public class DetalleVentaService {
         // El subtotal se calcula posteriormente
     }
 
-    private DetalleVentaResponse convertirAResponse(
-            DetalleVentaEntity detalleVenta
+    private com.equipo.tambo.dto.SaleDetailResponse convertirAResponse(
+            SaleDetailEntity detalleVenta
     ) {
 
-        return new DetalleVentaResponse(
+        return new com.equipo.tambo.dto.SaleDetailResponse(
                 detalleVenta.getId(),
                 detalleVenta.getIdVenta(),
                 detalleVenta.getIdProducto(),

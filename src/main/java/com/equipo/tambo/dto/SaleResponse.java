@@ -1,4 +1,4 @@
-package com.equipo.tambo.venta.dto;
+package com.equipo.tambo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class VentaResponse {
+public class SaleResponse {
     
     private Long id;
     private Long clienteId;

@@ -1,4 +1,4 @@
-package com.equipo.tambo.venta.dto;
+package com.equipo.tambo.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class VentaRequest {
+public class SaleRequest {
     
     private Long clienteId; 
     
