@@ -19,10 +19,12 @@ public class SaleEntity {
 
     @Column(nullable = false)
     private Long client;
+    /* TODO: Join con ClientEntity */
 
     @Column(nullable = false)
     private LocalDateTime date;
 
-    @Column(nullable = false)
-    private Long user;
+    @ManyToOne
+    @JoinColumn(name = "user", nullable = false)
+    private UserEntity user;
 }
