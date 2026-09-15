@@ -1,4 +1,4 @@
-package com.equipo.tambo.cliente.dto;
+package com.equipo.tambo.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClienteRequest {
+public class ClientRequest {
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 100)

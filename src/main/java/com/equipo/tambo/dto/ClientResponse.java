@@ -1,4 +1,4 @@
-package com.equipo.tambo.cliente.dto;
+package com.equipo.tambo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClienteResponse {
-
+public class ClientResponse {
     private Long id;
     private String nombre;
     private String apellido;

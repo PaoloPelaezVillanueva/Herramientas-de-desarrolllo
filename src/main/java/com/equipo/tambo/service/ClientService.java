@@ -1,9 +1,9 @@
-package com.equipo.tambo.cliente.service;
+package com.equipo.tambo.service;
 
-import com.equipo.tambo.cliente.dto.ClienteRequest;
-import com.equipo.tambo.cliente.dto.ClienteResponse;
-import com.equipo.tambo.cliente.entity.ClienteEntity;
-import com.equipo.tambo.cliente.repository.ClienteRepository;
+import com.equipo.tambo.dto.ClientRequest;
+import com.equipo.tambo.dto.ClientResponse;
+import com.equipo.tambo.entity.ClientEntity;
+import com.equipo.tambo.repository.ClientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,39 +11,39 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
-public class ClienteService {
+public class ClientService {
 
-    private final ClienteRepository clienteRepository;
+    private final ClientRepository clientRepository;
 
-    public ClienteService(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
     }
 
-    public List<ClienteResponse> obtenerTodos() {
-        return clienteRepository.findAll().stream()
+    public List<ClientResponse> obtenerTodos() {
+        return clientRepository.findAll().stream()
                 .map(this::convertirAResponse)
                 .toList();
     }
 
-    public ClienteResponse obtenerPorId(Long id) {
-        ClienteEntity cliente = clienteRepository.findById(id)
+    public ClientResponse obtenerPorId(Long id) {
+        ClientEntity client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id));
-        return convertirAResponse(cliente);
+        return convertirAResponse(client);
     }
 
-    public ClienteResponse crear(ClienteRequest request) {
-        if (clienteRepository.existsByDni(request.getDni())) {
+    public ClientResponse crear(ClientRequest request) {
+        if (clientRepository.existsByDni(request.getDni())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya está registrado.");
         }
-        ClienteEntity guardado = clienteRepository.save(convertirAEntity(request));
+        ClientEntity guardado = clientRepository.save(convertirAEntity(request));
         return convertirAResponse(guardado);
     }
 
-    public ClienteResponse actualizar(Long id, ClienteRequest request) {
-        ClienteEntity existente = clienteRepository.findById(id)
+    public ClientResponse actualizar(Long id, ClientRequest request) {
+        ClientEntity existente = clientRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id));
 
-        if (clienteRepository.existsByDniAndIdNot(request.getDni(), id)) {
+        if (clientRepository.existsByDniAndIdNot(request.getDni(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya pertenece a otro cliente.");
         }
 
@@ -53,18 +53,18 @@ public class ClienteService {
         existente.setEmail(request.getEmail());
         existente.setDireccion(request.getDireccion());
 
-        return convertirAResponse(clienteRepository.save(existente));
+        return convertirAResponse(clientRepository.save(existente));
     }
 
     public void eliminar(Long id) {
-        if (!clienteRepository.existsById(id)) {
+        if (!clientRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id);
         }
-        clienteRepository.deleteById(id);
+        clientRepository.deleteById(id);
     }
 
-    private ClienteResponse convertirAResponse(ClienteEntity entity) {
-        ClienteResponse response = new ClienteResponse();
+    private ClientResponse convertirAResponse(ClientEntity entity) {
+        ClientResponse response = new ClientResponse();
         response.setId(entity.getId());
         response.setNombre(entity.getNombre());
         response.setApellido(entity.getApellido());
@@ -74,8 +74,8 @@ public class ClienteService {
         return response;
     }
 
-    private ClienteEntity convertirAEntity(ClienteRequest request) {
-        ClienteEntity entity = new ClienteEntity();
+    private ClientEntity convertirAEntity(ClientRequest request) {
+        ClientEntity entity = new ClientEntity();
         entity.setNombre(request.getNombre());
         entity.setApellido(request.getApellido());
         entity.setDni(request.getDni());
