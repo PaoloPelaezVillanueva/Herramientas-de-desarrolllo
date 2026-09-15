@@ -17,11 +17,13 @@ public class SaleDetailEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long sale;
+    @ManyToOne
+    @JoinColumn(name = "sale", nullable = false)
+    private SaleEntity sale;
 
-    @Column(nullable = false)
-    private Long product;
+    @ManyToOne
+    @JoinColumn(name = "product", nullable = false)
+    private ProductEntity product;
 
     @Column(nullable = false)
     private Long quantity;
