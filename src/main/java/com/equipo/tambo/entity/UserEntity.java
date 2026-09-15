@@ -1,5 +1,7 @@
 package com.equipo.tambo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +28,7 @@ public class UserEntity {
     @Column(nullable = false, length = 20, unique = true)
     private String user;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
