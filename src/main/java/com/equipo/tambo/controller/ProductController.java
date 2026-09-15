@@ -12,50 +12,38 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> listar() {
-        return ResponseEntity.ok(productService.listar());
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        return ResponseEntity.ok(productService.listProducts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> buscarPorId(
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(productService.buscarPorId(id));
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> crear(
-            @Valid @RequestBody ProductRequest request
-    ) {
-        ProductResponse productoCreado = productService.crear(request);
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
+        ProductResponse product = productService.createProduct(request);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(productoCreado);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> actualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody ProductRequest request
-    ) {
-        return ResponseEntity.ok(
-                productService.actualizar(id, request)
-        );
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
+        return ResponseEntity.ok(productService.updateProduct(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Long id
-    ) {
-        productService.eliminar(id);
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+
         return ResponseEntity.noContent().build();
     }
 }

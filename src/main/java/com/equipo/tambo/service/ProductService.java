@@ -18,66 +18,63 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ProductService {
 
-    private final ProductRepository productoRepository;
+    private final ProductRepository productRepository;
 
-    public List<ProductResponse> listar() {
-        return productoRepository.findAll()
+    public List<ProductResponse> listProducts() {
+        return productRepository.findAll()
                 .stream()
-                .map(this::convertirAResponse)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public ProductResponse buscarPorId(Long id) {
-        return convertirAResponse(obtenerProducto(id));
+    public ProductResponse getById(Long id) {
+        return toResponse(getProduct(id));
     }
 
-    @Transactional
-    public ProductResponse crear(ProductRequest request) {
-        ProductEntity producto = new ProductEntity();
-        copiarDatos(request, producto);
-
-        return convertirAResponse(productoRepository.save(producto));
-    }
-
-    @Transactional
-    public ProductResponse actualizar(Long id, ProductRequest request) {
-        ProductEntity producto = obtenerProducto(id);
-        copiarDatos(request, producto);
-
-        return convertirAResponse(productoRepository.save(producto));
-    }
-
-    @Transactional
-    public void eliminar(Long id) {
-        ProductEntity producto = obtenerProducto(id);
-        productoRepository.delete(producto);
-    }
-
-    private ProductEntity obtenerProducto(Long id) {
-        return productoRepository.findById(id)
+    private ProductEntity getProduct(Long id) {
+        return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el producto con ID " + id
                 ));
     }
 
-    private void copiarDatos(
-            ProductRequest request,
-            ProductEntity producto
-    ) {
-        producto.setName(request.getNombre());
-        producto.setDescripcion(request.getDescripcion());
-        producto.setCost(request.getPrecio());
+    @Transactional
+    public ProductResponse createProduct(ProductRequest request) {
+        ProductEntity product = new ProductEntity();
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setCost(request.getCost());
+
+        return toResponse(productRepository.save(product));
     }
 
-    private ProductResponse convertirAResponse(ProductEntity producto) {
+    @Transactional
+    public ProductResponse updateProduct(Long id, ProductRequest request) {
+        ProductEntity product = getProduct(id);
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setCost(request.getCost());
+
+        return toResponse(productRepository.save(product));
+    }
+
+    @Transactional
+    public void deleteProduct(Long id) {
+        ProductEntity product = getProduct(id);
+        productRepository.delete(product);
+    }
+
+    private ProductResponse toResponse(ProductEntity product) {
         return new ProductResponse(
-                producto.getId(),
-                producto.getName(),
-                producto.getDescripcion(),
-                producto.getCost(),
-                producto.getStock(),
-                producto.getActivo()
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getCost(),
+                product.getStock(),
+                product.getActive()
         );
     }
 }

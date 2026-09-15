@@ -2,8 +2,11 @@ package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.SaleRequest;
 import com.equipo.tambo.dto.SaleResponse;
+import com.equipo.tambo.entity.RoleEntity;
 import com.equipo.tambo.entity.SaleEntity;
+import com.equipo.tambo.entity.UserEntity;
 import com.equipo.tambo.repository.SaleRepository;
+import com.equipo.tambo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,42 +23,20 @@ import java.util.stream.Collectors;
 public class SaleService {
 
     private final SaleRepository saleRepository;
+    private final UserRepository userRepository;
 
-    public List<SaleResponse> listar() {
+    public List<SaleResponse> listSales() {
         return saleRepository.findAll()
                 .stream()
-                .map(this::convertirAResponse)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public SaleResponse buscarPorId(Long id) {
-        return convertirAResponse(obtenerVenta(id));
+    public SaleResponse getById(Long id) {
+        return toResponse(getSale(id));
     }
 
-    @Transactional
-    public SaleResponse crear(SaleRequest request) {
-        SaleEntity venta = new SaleEntity();
-        copiarDatos(request, venta);
-        venta.setDate(LocalDateTime.now());
-
-        return convertirAResponse(saleRepository.save(venta));
-    }
-
-    @Transactional
-    public SaleResponse actualizar(Long id, SaleRequest request) {
-        SaleEntity venta = obtenerVenta(id);
-        copiarDatos(request, venta);
-
-        return convertirAResponse(saleRepository.save(venta));
-    }
-
-    @Transactional
-    public void eliminar(Long id) {
-        SaleEntity venta = obtenerVenta(id);
-        saleRepository.delete(venta);
-    }
-
-    private SaleEntity obtenerVenta(Long id) {
+    private SaleEntity getSale(Long id) {
         return saleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -63,20 +44,51 @@ public class SaleService {
                 ));
     }
 
-    private void copiarDatos(
-            SaleRequest request,
-            SaleEntity venta
-    ) {
-        venta.setClienteId(request.getClienteId());
-        venta.setUsuarioId(request.getUsuarioId());
+    @Transactional
+    public SaleResponse createSale(SaleRequest request) {
+        UserEntity user = userRepository.findById(request.getUser())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el usuario con ID " + request.getUser()
+                ));
+
+        SaleEntity sale = new SaleEntity();
+
+        sale.setClient(request.getClient());
+        sale.setUser(user);
+        sale.setDate(LocalDateTime.now());
+
+        return toResponse(saleRepository.save(sale));
     }
 
-    private SaleResponse convertirAResponse(SaleEntity venta) {
+    @Transactional
+    public SaleResponse updateSale(Long id, SaleRequest request) {
+        UserEntity user = userRepository.findById(request.getUser())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el usuario con ID " + request.getUser()
+                ));
+
+        SaleEntity sale = getSale(id);
+        sale.setClient(request.getClient());
+        sale.setUser(user);
+        /* TODO: Actualización de fecha? */
+
+        return toResponse(saleRepository.save(sale));
+    }
+
+    @Transactional
+    public void deleteSale(Long id) {
+        SaleEntity sale = getSale(id);
+        saleRepository.delete(sale);
+    }
+
+    private SaleResponse toResponse(SaleEntity sale) {
         return new SaleResponse(
-                venta.getId(),
-                venta.getClienteId(),
-                venta.getUsuarioId(),
-                venta.getDate()
+                sale.getId(),
+                sale.getClient(),
+                sale.getUser(),
+                sale.getDate()
         );
     }
 }

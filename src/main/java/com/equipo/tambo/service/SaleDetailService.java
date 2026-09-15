@@ -1,8 +1,13 @@
 package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.SaleDetailRequest;
+import com.equipo.tambo.dto.SaleDetailResponse;
+import com.equipo.tambo.entity.ProductEntity;
 import com.equipo.tambo.entity.SaleDetailEntity;
+import com.equipo.tambo.entity.SaleEntity;
+import com.equipo.tambo.repository.ProductRepository;
 import com.equipo.tambo.repository.SaleDetailRepository;
+import com.equipo.tambo.repository.SaleRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,58 +22,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SaleDetailService {
-
     private final SaleDetailRepository saleDetailRepository;
+    private final SaleRepository saleRepository;
+    private final ProductRepository productRepository;
 
-    public List<com.equipo.tambo.dto.SaleDetailResponse> listar() {
+    public List<SaleDetailResponse> listSalesDetail() {
         return saleDetailRepository.findAll()
                 .stream()
-                .map(this::convertirAResponse)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public com.equipo.tambo.dto.SaleDetailResponse buscarPorId(Long id) {
-        return convertirAResponse(obtenerDetalleVenta(id));
+    public SaleDetailResponse getById(Long id) {
+        return toResponse(getSaleDetail(id));
     }
 
-    @Transactional
-    public com.equipo.tambo.dto.SaleDetailResponse crear(@Valid SaleDetailRequest request) {
-
-        SaleDetailEntity detalleVenta = new SaleDetailEntity();
-
-        copiarDatos(request, detalleVenta);
-
-        return convertirAResponse(
-                saleDetailRepository.save(detalleVenta)
-        );
-    }
-
-    @Transactional
-    public com.equipo.tambo.dto.SaleDetailResponse actualizar(
-            Long id,
-            com.equipo.tambo.dto.SaleDetailRequest request
-    ) {
-
-        SaleDetailEntity detalleVenta = obtenerDetalleVenta(id);
-
-        copiarDatos(request, detalleVenta);
-
-        return convertirAResponse(
-                saleDetailRepository.save(detalleVenta)
-        );
-    }
-
-    @Transactional
-    public void eliminar(Long id) {
-
-        SaleDetailEntity saleDetail =
-                obtenerDetalleVenta(id);
-
-        saleDetailRepository.delete(saleDetail);
-    }
-
-    private SaleDetailEntity obtenerDetalleVenta(Long id) {
-
+    private SaleDetailEntity getSaleDetail(Long id) {
         return saleDetailRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -76,28 +45,66 @@ public class SaleDetailService {
                 ));
     }
 
-    private void copiarDatos(
-            com.equipo.tambo.dto.SaleDetailRequest request,
-            SaleDetailEntity detalleVenta
-    ) {
+    @Transactional
+    public SaleDetailResponse createSaleDetail(@Valid SaleDetailRequest request) {
+        SaleEntity sale = saleRepository.findById(request.getSale())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró la venta con ID " + request.getSale()
+                ));
 
-        detalleVenta.setIdVenta(request.getIdVenta());
-        detalleVenta.setIdProducto(request.getIdProducto());
-        detalleVenta.setCantidad(request.getCantidad());
+        ProductEntity product = productRepository.findById(request.getProduct())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el producto con ID " + request.getProduct()
+                ));
 
-        // El subtotal se calcula posteriormente
+        SaleDetailEntity saleDetail = new SaleDetailEntity();
+
+        saleDetail.setSale(sale);
+        saleDetail.setProduct(product);
+        saleDetail.setQuantity(request.getQuantity());
+
+        return toResponse(saleDetailRepository.save(saleDetail));
     }
 
-    private com.equipo.tambo.dto.SaleDetailResponse convertirAResponse(
-            SaleDetailEntity detalleVenta
-    ) {
+    @Transactional
+    public SaleDetailResponse updateSaleDetail(Long id, SaleDetailRequest request) {
+        SaleEntity sale = saleRepository.findById(request.getSale())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró la venta con ID " + request.getSale()
+                ));
 
-        return new com.equipo.tambo.dto.SaleDetailResponse(
-                detalleVenta.getId(),
-                detalleVenta.getIdVenta(),
-                detalleVenta.getIdProducto(),
-                detalleVenta.getCantidad(),
-                detalleVenta.getSubtotal()
+        ProductEntity product = productRepository.findById(request.getProduct())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el producto con ID " + request.getProduct()
+                ));
+
+        SaleDetailEntity saleDetail = getSaleDetail(id);
+
+        saleDetail.setSale(sale);
+        saleDetail.setProduct(product);
+        saleDetail.setQuantity(request.getQuantity());
+
+        return toResponse(saleDetailRepository.save(saleDetail));
+    }
+
+    @Transactional
+    public void deleteSaleDetail(Long id) {
+        SaleDetailEntity saleDetail = getSaleDetail(id);
+
+        saleDetailRepository.delete(saleDetail);
+    }
+
+    private SaleDetailResponse toResponse(SaleDetailEntity saleDetail) {
+        return new SaleDetailResponse(
+                saleDetail.getId(),
+                saleDetail.getSale(),
+                saleDetail.getProduct(),
+                saleDetail.getQuantity(),
+                saleDetail.getSubtotal()
         );
     }
 }
