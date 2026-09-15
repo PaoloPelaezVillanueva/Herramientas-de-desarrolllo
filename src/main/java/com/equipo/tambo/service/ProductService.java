@@ -1,9 +1,9 @@
-package com.equipo.tambo.producto.service;
+package com.equipo.tambo.service;
 
-import com.equipo.tambo.producto.dto.ProductoRequest;
-import com.equipo.tambo.producto.dto.ProductoResponse;
-import com.equipo.tambo.producto.entity.ProductoEntity;
-import com.equipo.tambo.producto.repository.ProductoRepository;
+import com.equipo.tambo.dto.ProductRequest;
+import com.equipo.tambo.dto.ProductResponse;
+import com.equipo.tambo.entity.ProductEntity;
+import com.equipo.tambo.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,32 +16,32 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ProductoService {
+public class ProductService {
 
-    private final ProductoRepository productoRepository;
+    private final ProductRepository productoRepository;
 
-    public List<ProductoResponse> listar() {
+    public List<ProductResponse> listar() {
         return productoRepository.findAll()
                 .stream()
                 .map(this::convertirAResponse)
                 .collect(Collectors.toList());
     }
 
-    public ProductoResponse buscarPorId(Long id) {
+    public ProductResponse buscarPorId(Long id) {
         return convertirAResponse(obtenerProducto(id));
     }
 
     @Transactional
-    public ProductoResponse crear(ProductoRequest request) {
-        ProductoEntity producto = new ProductoEntity();
+    public ProductResponse crear(ProductRequest request) {
+        ProductEntity producto = new ProductEntity();
         copiarDatos(request, producto);
 
         return convertirAResponse(productoRepository.save(producto));
     }
 
     @Transactional
-    public ProductoResponse actualizar(Long id, ProductoRequest request) {
-        ProductoEntity producto = obtenerProducto(id);
+    public ProductResponse actualizar(Long id, ProductRequest request) {
+        ProductEntity producto = obtenerProducto(id);
         copiarDatos(request, producto);
 
         return convertirAResponse(productoRepository.save(producto));
@@ -49,11 +49,11 @@ public class ProductoService {
 
     @Transactional
     public void eliminar(Long id) {
-        ProductoEntity producto = obtenerProducto(id);
+        ProductEntity producto = obtenerProducto(id);
         productoRepository.delete(producto);
     }
 
-    private ProductoEntity obtenerProducto(Long id) {
+    private ProductEntity obtenerProducto(Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -62,16 +62,16 @@ public class ProductoService {
     }
 
     private void copiarDatos(
-            ProductoRequest request,
-            ProductoEntity producto
+            ProductRequest request,
+            ProductEntity producto
     ) {
         producto.setName(request.getNombre());
         producto.setDescripcion(request.getDescripcion());
         producto.setCost(request.getPrecio());
     }
 
-    private ProductoResponse convertirAResponse(ProductoEntity producto) {
-        return new ProductoResponse(
+    private ProductResponse convertirAResponse(ProductEntity producto) {
+        return new ProductResponse(
                 producto.getId(),
                 producto.getName(),
                 producto.getDescripcion(),
