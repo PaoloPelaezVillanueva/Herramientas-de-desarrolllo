@@ -70,7 +70,7 @@ public class UserService {
 
         UserEntity user = getUser(id);
 
-        if (userRepository.existsByUser(request.getUser())) {
+        if (userRepository.existsByUserAndIdNot(request.getUser(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de usuario '" + request.getUser() + "' ya existe.");
         }
 
