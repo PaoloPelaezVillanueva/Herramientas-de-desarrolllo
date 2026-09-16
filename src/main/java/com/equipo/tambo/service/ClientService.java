@@ -3,12 +3,15 @@ package com.equipo.tambo.service;
 import com.equipo.tambo.dto.ClientRequest;
 import com.equipo.tambo.dto.ClientResponse;
 import com.equipo.tambo.entity.ClientEntity;
+import com.equipo.tambo.entity.UserEntity;
 import com.equipo.tambo.repository.ClientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
@@ -19,68 +22,71 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public List<ClientResponse> obtenerTodos() {
+    public List<ClientResponse> listClients() {
         return clientRepository.findAll().stream()
-                .map(this::convertirAResponse)
-                .toList();
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public ClientResponse obtenerPorId(Long id) {
-        ClientEntity client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id));
-        return convertirAResponse(client);
+    public ClientResponse getById(Long id) {
+        return toResponse(getClient(id));
     }
 
-    public ClientResponse crear(ClientRequest request) {
+    private ClientEntity getClient(Long id) {
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el cliente con ID " + id
+                ));
+    }
+
+    @Transactional
+    public ClientResponse createClient(ClientRequest request) {
         if (clientRepository.existsByDni(request.getDni())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya está registrado.");
         }
-        ClientEntity guardado = clientRepository.save(convertirAEntity(request));
-        return convertirAResponse(guardado);
+
+        ClientEntity client = new ClientEntity();
+        client.setName(request.getName());
+        client.setLastname(request.getLastname());
+        client.setEmail(request.getEmail());
+        client.setAddress(request.getAddress());
+        client.setDni(request.getDni());
+
+        return toResponse(clientRepository.save(client));
     }
 
-    public ClientResponse actualizar(Long id, ClientRequest request) {
-        ClientEntity existente = clientRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id));
+    @Transactional
+    public ClientResponse updateClient(Long id, ClientRequest request) {
+        ClientEntity client = getClient(id);
 
         if (clientRepository.existsByDniAndIdNot(request.getDni(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya pertenece a otro cliente.");
         }
 
-        existente.setNombre(request.getNombre());
-        existente.setApellido(request.getApellido());
-        existente.setDni(request.getDni());
-        existente.setEmail(request.getEmail());
-        existente.setDireccion(request.getDireccion());
+        client.setName(request.getName());
+        client.setLastname(request.getLastname());
+        client.setEmail(request.getEmail());
+        client.setAddress(request.getAddress());
+        client.setDni(request.getDni());
 
-        return convertirAResponse(clientRepository.save(existente));
+        return toResponse(clientRepository.save(client));
     }
 
-    public void eliminar(Long id) {
-        if (!clientRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con id: " + id);
-        }
-        clientRepository.deleteById(id);
+    @Transactional
+    public void deleteClient(Long id) {
+        ClientEntity client = getClient(id);
+        clientRepository.delete(client);
     }
 
-    private ClientResponse convertirAResponse(ClientEntity entity) {
-        ClientResponse response = new ClientResponse();
-        response.setId(entity.getId());
-        response.setNombre(entity.getNombre());
-        response.setApellido(entity.getApellido());
-        response.setDni(entity.getDni());
-        response.setEmail(entity.getEmail());
-        response.setDireccion(entity.getDireccion());
-        return response;
-    }
-
-    private ClientEntity convertirAEntity(ClientRequest request) {
-        ClientEntity entity = new ClientEntity();
-        entity.setNombre(request.getNombre());
-        entity.setApellido(request.getApellido());
-        entity.setDni(request.getDni());
-        entity.setEmail(request.getEmail());
-        entity.setDireccion(request.getDireccion());
-        return entity;
+    private ClientResponse toResponse(ClientEntity client) {
+        return new ClientResponse(
+                client.getId(),
+                client.getName(),
+                client.getLastname(),
+                client.getEmail(),
+                client.getAddress(),
+                client.getDni()
+        );
     }
 }
