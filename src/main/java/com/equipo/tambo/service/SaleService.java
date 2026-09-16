@@ -2,9 +2,11 @@ package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.SaleRequest;
 import com.equipo.tambo.dto.SaleResponse;
+import com.equipo.tambo.entity.ClientEntity;
 import com.equipo.tambo.entity.RoleEntity;
 import com.equipo.tambo.entity.SaleEntity;
 import com.equipo.tambo.entity.UserEntity;
+import com.equipo.tambo.repository.ClientRepository;
 import com.equipo.tambo.repository.SaleRepository;
 import com.equipo.tambo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class SaleService {
 
     private final SaleRepository saleRepository;
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
 
     public List<SaleResponse> listSales() {
         return saleRepository.findAll()
@@ -52,9 +55,15 @@ public class SaleService {
                         "No se encontró el usuario con ID " + request.getUser()
                 ));
 
+        ClientEntity client = clientRepository.findById(request.getClient())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el cliente con ID " + request.getClient()
+                ));
+
         SaleEntity sale = new SaleEntity();
 
-        sale.setClient(request.getClient());
+        sale.setClient(client);
         sale.setUser(user);
         sale.setDate(LocalDateTime.now());
 
@@ -69,8 +78,14 @@ public class SaleService {
                         "No se encontró el usuario con ID " + request.getUser()
                 ));
 
+        ClientEntity client = clientRepository.findById(request.getClient())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el cliente con ID " + request.getClient()
+                ));
+
         SaleEntity sale = getSale(id);
-        sale.setClient(request.getClient());
+        sale.setClient(client);
         sale.setUser(user);
         /* TODO: Actualización de fecha? */
 

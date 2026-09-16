@@ -16,18 +16,18 @@ public class ClientEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String nombre;
+    @Column(nullable = false, length = 100)
+    private String name;
 
-    @Column(name = "lastname", nullable = false, length = 100)
-    private String apellido;
+    @Column(nullable = false, length = 100)
+    private String lastname;
 
-    @Column(nullable = false, unique = true, length = 8)
-    private String dni;
-
-    @Column(length = 150)
+    @Column(nullable = false, length = 150)
     private String email;
 
-    @Column(name = "address", length = 255)
-    private String direccion;
+    @Column(nullable = false, length = 200)
+    private String address;
+
+    @Column(nullable = false, unique = true, length = 10)
+    private String dni;
 }

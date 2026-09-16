@@ -40,6 +40,10 @@ public class UserService {
 
     @Transactional
     public UserResponse createUser(UserRequest request) {
+        if (userRepository.existsByUser(request.getUser())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de usuario '" + request.getUser() + "' ya existe.");
+        }
+
         RoleEntity role = roleRepository.findById(request.getRole())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -53,7 +57,7 @@ public class UserService {
         user.setPassword(request.getPassword());
         user.setRole(role);
 
-        return toResponse(user);
+        return toResponse(userRepository.save(user));
     }
 
     @Transactional
@@ -65,13 +69,18 @@ public class UserService {
                 ));
 
         UserEntity user = getUser(id);
+
+        if (userRepository.existsByUserAndIdNot(request.getUser(), id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de usuario '" + request.getUser() + "' ya existe.");
+        }
+
         user.setName(request.getName());
         user.setLastname(request.getLastname());
         user.setUser(request.getUser());
         user.setPassword(request.getPassword());
         user.setRole(role);
 
-        return toResponse(user);
+        return toResponse(userRepository.save(user));
     }
 
     @Transactional

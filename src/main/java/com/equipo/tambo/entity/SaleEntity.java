@@ -17,9 +17,9 @@ public class SaleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long client;
-    /* TODO: Join con ClientEntity */
+    @ManyToOne
+    @JoinColumn(name = "client", nullable = false)
+    private ClientEntity client;
 
     @Column(nullable = false)
     private LocalDateTime date;
