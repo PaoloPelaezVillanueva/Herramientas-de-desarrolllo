@@ -19,15 +19,15 @@ public class ProductRequest {
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 100, message = "El nombre no puede superar los 100 caracteres")
-    private String nombre;
+    private String name;
 
     @Size(max = 255, message = "La descripción no puede superar los 255 caracteres")
-    private String descripcion;
+    private String description;
 
     @NotNull(message = "El precio es obligatorio")
     @DecimalMin(value = "0.01", message = "El precio debe ser mayor que cero")
     @Digits(integer = 8, fraction = 2, message = "El precio solo puede tener dos decimales")
-    private BigDecimal precio;
+    private BigDecimal cost;
 
     @NotNull(message = "El stock es obligatorio")
     @PositiveOrZero(message = "El stock no puede ser negativo")

@@ -13,13 +13,13 @@ public class ProductResponse {
 
     private Long id;
 
-    private String nombre;
+    private String name;
 
-    private String descripcion;
+    private String description;
 
-    private BigDecimal precio;
+    private BigDecimal cost;
 
     private Integer stock;
 
-    private Boolean activo;
+    private Boolean active;
 }

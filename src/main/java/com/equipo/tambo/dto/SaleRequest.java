@@ -10,8 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SaleRequest {
     
-    private Long clienteId; 
+    private Long client;
     
     @NotNull(message = "El ID del usuario/cajero es obligatorio")
-    private Long usuarioId; 
+    private Long user;
 }
