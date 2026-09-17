@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sales")
@@ -18,7 +20,7 @@ public class SaleEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "client", nullable = false)
+    @JoinColumn(name = "client", nullable = true)
     private ClientEntity client;
 
     @Column(nullable = false)
@@ -27,4 +29,8 @@ public class SaleEntity {
     @ManyToOne
     @JoinColumn(name = "user", nullable = false)
     private UserEntity user;
+
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SaleDetailEntity> details = new ArrayList<>();
+
 }

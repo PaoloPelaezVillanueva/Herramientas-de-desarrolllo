@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -16,4 +17,5 @@ public class SaleResponse {
     private ClientEntity client;
     private UserEntity user;
     private LocalDateTime date;
+    private List<SaleDetailResponse> details;
 }
