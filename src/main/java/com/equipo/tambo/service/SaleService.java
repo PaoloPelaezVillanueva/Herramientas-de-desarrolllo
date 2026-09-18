@@ -113,6 +113,7 @@ public class SaleService {
                 sale.getClient(),
                 sale.getUser(),
                 sale.getDate(),
+                sale.getTotal(),
                 detailResponses
         );
     }
