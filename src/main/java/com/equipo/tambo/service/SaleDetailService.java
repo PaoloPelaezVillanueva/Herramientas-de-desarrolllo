@@ -101,7 +101,6 @@ public class SaleDetailService {
     private SaleDetailResponse toResponse(SaleDetailEntity saleDetail) {
         return new SaleDetailResponse(
                 saleDetail.getId(),
-                saleDetail.getSale(),
                 saleDetail.getProduct(),
                 saleDetail.getQuantity(),
                 saleDetail.getSubtotal()
