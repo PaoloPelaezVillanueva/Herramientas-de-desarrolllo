@@ -14,4 +14,6 @@ public class SaleRequest {
     
     @NotNull(message = "El ID del usuario/cajero es obligatorio")
     private Long user;
+
+    /* TODO: Agregar SaleDetail */
 }

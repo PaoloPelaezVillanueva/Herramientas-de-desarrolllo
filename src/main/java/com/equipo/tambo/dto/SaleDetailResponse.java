@@ -14,12 +14,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaleDetailResponse {
-
     private Long id;
-    private SaleEntity sale;
     private ProductEntity product;
     private Long quantity;
     private BigDecimal subtotal;
-
-
 }

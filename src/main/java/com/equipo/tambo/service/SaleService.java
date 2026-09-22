@@ -1,5 +1,6 @@
 package com.equipo.tambo.service;
 
+import com.equipo.tambo.dto.SaleDetailResponse;
 import com.equipo.tambo.dto.SaleRequest;
 import com.equipo.tambo.dto.SaleResponse;
 import com.equipo.tambo.entity.ClientEntity;
@@ -99,11 +100,21 @@ public class SaleService {
     }
 
     private SaleResponse toResponse(SaleEntity sale) {
+        List<SaleDetailResponse> detailResponses = sale.getDetails().stream()
+                .map(detail -> new SaleDetailResponse(
+                        detail.getId(),
+                        detail.getProduct(),
+                        detail.getQuantity(),
+                        detail.getSubtotal()
+                )).toList();
+
         return new SaleResponse(
                 sale.getId(),
                 sale.getClient(),
                 sale.getUser(),
-                sale.getDate()
+                sale.getDate(),
+                sale.getTotal(),
+                detailResponses
         );
     }
 }
