@@ -34,7 +34,11 @@ public class SaleEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SaleDetailEntity> details = new ArrayList<>();
 
+    public void addDetail(SaleDetailEntity detail) {
+        details.add(detail);
+        detail.setSale(this);
+    }
 }

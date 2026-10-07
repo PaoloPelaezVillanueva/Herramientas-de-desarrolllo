@@ -11,9 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SaleDetailRequest {
 
-    @NotNull(message = "La venta es obligatoria")
-    private Long sale;
-
     @NotNull(message = "El producto es obligatorio")
     private Long product;
 
