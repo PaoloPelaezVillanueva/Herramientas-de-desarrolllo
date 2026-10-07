@@ -17,7 +17,7 @@ public class SaleDetailEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale", nullable = false)
     private SaleEntity sale;
 

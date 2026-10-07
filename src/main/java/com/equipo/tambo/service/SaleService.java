@@ -1,12 +1,10 @@
 package com.equipo.tambo.service;
 
+import com.equipo.tambo.dto.SaleDetailRequest;
 import com.equipo.tambo.dto.SaleDetailResponse;
 import com.equipo.tambo.dto.SaleRequest;
 import com.equipo.tambo.dto.SaleResponse;
-import com.equipo.tambo.entity.ClientEntity;
-import com.equipo.tambo.entity.RoleEntity;
-import com.equipo.tambo.entity.SaleEntity;
-import com.equipo.tambo.entity.UserEntity;
+import com.equipo.tambo.entity.*;
 import com.equipo.tambo.repository.ClientRepository;
 import com.equipo.tambo.repository.SaleRepository;
 import com.equipo.tambo.repository.UserRepository;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +27,7 @@ public class SaleService {
     private final SaleRepository saleRepository;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
+    private final SaleDetailService saleDetailService;
 
     public List<SaleResponse> listSales() {
         return saleRepository.findAll()
@@ -56,11 +56,15 @@ public class SaleService {
                         "No se encontró el usuario con ID " + request.getUser()
                 ));
 
-        ClientEntity client = clientRepository.findById(request.getClient())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró el cliente con ID " + request.getClient()
-                ));
+        ClientEntity client = null;
+
+        if(request.getClient() != null) {
+            client = clientRepository.findById(request.getClient())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "No se encontró el cliente con ID " + request.getClient()
+                    ));
+        }
 
         SaleEntity sale = new SaleEntity();
 
@@ -68,27 +72,39 @@ public class SaleService {
         sale.setUser(user);
         sale.setDate(LocalDateTime.now());
 
+        request.getDetails().forEach(d -> saleDetailService.createSaleDetail(sale, d));
+
+        recalculateTotal(sale);
+
         return toResponse(saleRepository.save(sale));
     }
 
     @Transactional
     public SaleResponse updateSale(Long id, SaleRequest request) {
+        SaleEntity sale = getSale(id);
+
         UserEntity user = userRepository.findById(request.getUser())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el usuario con ID " + request.getUser()
                 ));
 
-        ClientEntity client = clientRepository.findById(request.getClient())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró el cliente con ID " + request.getClient()
-                ));
+        ClientEntity client = null;
 
-        SaleEntity sale = getSale(id);
+        if(request.getClient() != null) {
+            client = clientRepository.findById(request.getClient())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "No se encontró el cliente con ID " + request.getClient()
+                    ));
+        }
+
         sale.setClient(client);
         sale.setUser(user);
-        /* TODO: Actualización de fecha? */
+
+        saleDetailService.replaceDetails(sale, request.getDetails());
+
+        recalculateTotal(sale);
 
         return toResponse(saleRepository.save(sale));
     }
@@ -97,6 +113,34 @@ public class SaleService {
     public void deleteSale(Long id) {
         SaleEntity sale = getSale(id);
         saleRepository.delete(sale);
+    }
+
+    @Transactional
+    public SaleResponse updateSaleDetail(Long id, Long detailId, SaleDetailRequest request) {
+        SaleEntity sale = getSale(id);
+
+        saleDetailService.updateSaleDetail(sale, detailId, request);
+
+        recalculateTotal(sale);
+
+        return toResponse(sale);
+    }
+
+    @Transactional
+    public void deleteSaleDetail(Long id, Long detailId) {
+        SaleEntity sale = getSale(id);
+
+        saleDetailService.deleteSaleDetail(sale, detailId);
+
+        recalculateTotal(sale);
+    }
+
+    private void recalculateTotal(SaleEntity sale) {
+        BigDecimal total = sale.getDetails().stream()
+                .map(SaleDetailEntity::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        sale.setTotal(total);
     }
 
     private SaleResponse toResponse(SaleEntity sale) {

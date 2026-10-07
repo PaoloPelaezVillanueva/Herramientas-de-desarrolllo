@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,19 +24,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class SaleDetailService {
     private final SaleDetailRepository saleDetailRepository;
-    private final SaleRepository saleRepository;
     private final ProductRepository productRepository;
-
-    public List<SaleDetailResponse> listSalesDetail() {
-        return saleDetailRepository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
-    }
-
-    public SaleDetailResponse getById(Long id) {
-        return toResponse(getSaleDetail(id));
-    }
 
     private SaleDetailEntity getSaleDetail(Long id) {
         return saleDetailRepository.findById(id)
@@ -45,14 +34,7 @@ public class SaleDetailService {
                 ));
     }
 
-    @Transactional
-    public SaleDetailResponse createSaleDetail(@Valid SaleDetailRequest request) {
-        SaleEntity sale = saleRepository.findById(request.getSale())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró la venta con ID " + request.getSale()
-                ));
-
+    public void createSaleDetail(SaleEntity sale, @Valid SaleDetailRequest request) {
         ProductEntity product = productRepository.findById(request.getProduct())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -61,20 +43,32 @@ public class SaleDetailService {
 
         SaleDetailEntity saleDetail = new SaleDetailEntity();
 
-        saleDetail.setSale(sale);
         saleDetail.setProduct(product);
         saleDetail.setQuantity(request.getQuantity());
 
-        return toResponse(saleDetailRepository.save(saleDetail));
+        BigDecimal subtotal = product.getCost().multiply(BigDecimal.valueOf(request.getQuantity()));
+        saleDetail.setSubtotal(subtotal);
+
+        sale.addDetail(saleDetail);
     }
 
-    @Transactional
-    public SaleDetailResponse updateSaleDetail(Long id, SaleDetailRequest request) {
-        SaleEntity sale = saleRepository.findById(request.getSale())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró la venta con ID " + request.getSale()
-                ));
+    public void replaceDetails(SaleEntity sale, List<SaleDetailRequest> requests) {
+        sale.getDetails().clear();
+
+        for (SaleDetailRequest request : requests) {
+            createSaleDetail(sale, request);
+        }
+    }
+
+    public void updateSaleDetail(SaleEntity sale, Long id, SaleDetailRequest request) {
+        SaleDetailEntity saleDetail = getSaleDetail(id);
+
+        if(!saleDetail.getSale().getId().equals(sale.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El detalle con ID " + id + " no pertenece a la venta con ID " + sale.getId()
+            );
+        }
 
         ProductEntity product = productRepository.findById(request.getProduct())
                 .orElseThrow(() -> new ResponseStatusException(
@@ -82,28 +76,26 @@ public class SaleDetailService {
                         "No se encontró el producto con ID " + request.getProduct()
                 ));
 
-        SaleDetailEntity saleDetail = getSaleDetail(id);
-
-        saleDetail.setSale(sale);
         saleDetail.setProduct(product);
         saleDetail.setQuantity(request.getQuantity());
 
-        return toResponse(saleDetailRepository.save(saleDetail));
+        BigDecimal subtotal = saleDetail.getProduct()
+                .getCost()
+                .multiply(BigDecimal.valueOf(request.getQuantity()));
+
+        saleDetail.setSubtotal(subtotal);
     }
 
-    @Transactional
-    public void deleteSaleDetail(Long id) {
+    public void deleteSaleDetail(SaleEntity sale, Long id) {
         SaleDetailEntity saleDetail = getSaleDetail(id);
 
-        saleDetailRepository.delete(saleDetail);
-    }
+        if(!saleDetail.getSale().getId().equals(sale.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El detalle con ID " + id + " no pertenece a la venta con ID " + sale.getId()
+            );
+        }
 
-    private SaleDetailResponse toResponse(SaleDetailEntity saleDetail) {
-        return new SaleDetailResponse(
-                saleDetail.getId(),
-                saleDetail.getProduct(),
-                saleDetail.getQuantity(),
-                saleDetail.getSubtotal()
-        );
+        sale.getDetails().remove(saleDetail);
     }
 }
