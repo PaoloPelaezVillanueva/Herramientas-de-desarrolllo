@@ -42,6 +42,7 @@ CREATE TABLE sales (
     client BIGINT,
     date DATETIME NOT NULL,
     user BIGINT NOT NULL,
+    total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     CONSTRAINT fk_sales_client FOREIGN KEY (client) REFERENCES clients(id),
     CONSTRAINT fk_sales_user FOREIGN KEY (user) REFERENCES users(id)
 );
@@ -80,17 +81,17 @@ INSERT INTO products (name, description, cost, stock, active) VALUES
 ('Leche Gloria 1L', 'Leche evaporada Gloria de 1 litro', 4.50, 30, TRUE),
 ('Atún Florida 170g', 'Lata de atún Florida de 170g', 5.90, 25, TRUE);
 
-INSERT INTO sales (client, date, user) VALUES
-(1, '2026-08-25 09:15:00', 2),
-(NULL, '2026-08-25 10:30:00', 2),
-(2, '2026-08-25 12:45:00', 3),
-(NULL, '2026-08-26 08:20:00', 2),
-(3, '2026-08-26 14:10:00', 3),
-(NULL, '2026-08-27 16:30:00', 2),
-(1, '2026-08-28 11:05:00', 3),
-(NULL, '2026-08-29 18:40:00', 2),
-(2, '2026-08-30 13:25:00', 3),
-(NULL, '2026-08-31 20:15:00', 2);
+INSERT INTO sales (client, date, user, total) VALUES
+(1, '2026-08-25 09:15:00', 2, 11.20),
+(NULL, '2026-08-25 10:30:00', 2, 6.80),
+(2, '2026-08-25 12:45:00', 3, 19.30),
+(NULL, '2026-08-26 08:20:00', 2, 4.50),
+(3, '2026-08-26 14:10:00', 3, 17.90),
+(NULL, '2026-08-27 16:30:00', 2, 9.00),
+(1, '2026-08-28 11:05:00', 3, 16.90),
+(NULL, '2026-08-29 18:40:00', 2, 8.60),
+(2, '2026-08-30 13:25:00', 3, 27.30),
+(NULL, '2026-08-31 20:15:00', 2, 8.70);
 
 INSERT INTO sale_detail (sale, product, quantity, subtotal) VALUES
 -- Venta 1 - Juan Pérez

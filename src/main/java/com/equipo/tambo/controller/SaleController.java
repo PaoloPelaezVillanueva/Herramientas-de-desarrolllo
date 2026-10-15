@@ -1,5 +1,6 @@
 package com.equipo.tambo.controller;
 
+import com.equipo.tambo.dto.SaleDetailRequest;
 import com.equipo.tambo.dto.SaleRequest;
 import com.equipo.tambo.dto.SaleResponse;
 import com.equipo.tambo.service.SaleService;
@@ -44,6 +45,17 @@ public class SaleController {
     public ResponseEntity<Void> deleteSale(@PathVariable Long id) {
         saleService.deleteSale(id);
 
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/details/{detailId}")
+    public ResponseEntity<SaleResponse> updateSaleDetail(@PathVariable Long id, @PathVariable Long detailId, @Valid @RequestBody SaleDetailRequest request) {
+        return ResponseEntity.ok(saleService.updateSaleDetail(id, detailId, request));
+    }
+
+    @DeleteMapping("/{id}/details/{detailId}")
+    public ResponseEntity<Void> deleteSaleDetail(@PathVariable Long id, @PathVariable Long detailId) {
+        saleService.deleteSaleDetail(id, detailId);
         return ResponseEntity.noContent().build();
     }
 }
