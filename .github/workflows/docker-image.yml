@@ -90,6 +90,9 @@ jobs:
     runs-on: self-hosted
     needs: package
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
