@@ -41,6 +41,16 @@ public class SaleDetailService {
                         "No se encontró el producto con ID " + request.getProduct()
                 ));
 
+        if (product.getStock() < request.getQuantity()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Stock insuficiente para '" + product.getName() + "'. Stock disponible: " + product.getStock()
+            );
+        }
+
+        product.setStock(product.getStock() - request.getQuantity().intValue());
+        productRepository.save(product);
+
         SaleDetailEntity saleDetail = new SaleDetailEntity();
 
         saleDetail.setProduct(product);
@@ -95,6 +105,10 @@ public class SaleDetailService {
                     "El detalle con ID " + id + " no pertenece a la venta con ID " + sale.getId()
             );
         }
+
+        ProductEntity product = saleDetail.getProduct();
+        product.setStock(product.getStock() + saleDetail.getQuantity().intValue());
+        productRepository.save(product);
 
         sale.getDetails().remove(saleDetail);
     }
