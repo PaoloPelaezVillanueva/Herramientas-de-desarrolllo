@@ -1,0 +1,484 @@
+{
+  "info": {
+    "name": "Tambo API",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Usuarios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/users",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Clientes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/clients",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "clients"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Productos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/products",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Ventas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/sales/9",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "sales",
+            "9"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Usuario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/users",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Renato\",\n  \"lastname\": \"Gutiérrez\",\n  \"user\": \"rguti\",\n  \"password\": \"123456\",\n  \"role\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Cliente",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/clients",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "clients"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"test\",\n  \"lastname\": \"test\",\n  \"email\": \"test@gmail.com\",\n  \"address\": \"Av. Los Olivos 123, Lima\",\n  \"dni\": \"72845613\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Producto",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/products",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"test\",\n  \"description\": \"test\",\n  \"cost\": 2.50,\n  \"stock\": 50,\n  \"active\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Ventas",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/sales",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "sales"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client\": 1,\n  \"user\": 1,\n  \"details\": [\n    {\n      \"product\": 1,\n      \"quantity\": 15\n    },\n    {\n      \"product\": 2,\n      \"quantity\": 20\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Usuario",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/users/4",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "4"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Cliente",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/clients/4",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "clients",
+            "4"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Producto",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/products/11",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products",
+            "11"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Venta",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/sales/10",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "sales",
+            "10"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Detalle de Venta",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/sales/11/details/1",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "sales",
+            "11",
+            "details",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Usuario",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/users/3",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "users",
+            "3"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"María\",\n  \"lastname\": \"Torres\",\n  \"user\": \"mtorres\",\n  \"password\": \"123456\",\n  \"role\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Cliente",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/clients/3",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "clients",
+            "3"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Diego\",\n  \"lastname\": \"Ramírez\",\n  \"email\": \"diego.ramirez@gmail.com\",\n  \"address\": \"Av. Brasil 789, Lima\",\n  \"dni\": \"71234589\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Producto",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/products/10",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products",
+            "10"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Atún Florida 170g\",\n  \"description\": \"Lata de atún Florida de 170g\",\n  \"cost\": 5.90,\n  \"stock\": 25,\n  \"active\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Ventas",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/sales/9",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "sales",
+            "9"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client\": 2,\n  \"user\": 3,\n  \"details\": [\n    {\n      \"product\": 7,\n      \"quantity\": 2\n    },\n    {\n      \"product\": 8,\n      \"quantity\": 1\n    },\n    {\n      \"product\": 10,\n      \"quantity\": 2\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Detalle de Venta",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/sales/9/details/35",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "sales",
+            "9",
+            "details",
+            "35"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"product\": 10,\n  \"quantity\": 3\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "variable": []
+}
