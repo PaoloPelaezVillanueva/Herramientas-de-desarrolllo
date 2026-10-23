@@ -48,6 +48,27 @@
       }
     },
     {
+      "name": "Categorias",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/categories",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
       "name": "Productos",
       "request": {
         "method": "GET",
@@ -142,6 +163,36 @@
         "body": {
           "mode": "raw",
           "raw": "{\n  \"name\": \"test\",\n  \"lastname\": \"test\",\n  \"email\": \"test@gmail.com\",\n  \"address\": \"Av. Los Olivos 123, Lima\",\n  \"dni\": \"72845613\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Categoria",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/categories",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"category\": \"Chocolates\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -248,6 +299,28 @@
             "api",
             "clients",
             "4"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Categoría",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/categories/8",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories",
+            "8"
           ],
           "query": [],
           "variable": []
@@ -376,6 +449,37 @@
         "body": {
           "mode": "raw",
           "raw": "{\n  \"name\": \"Diego\",\n  \"lastname\": \"Ramírez\",\n  \"email\": \"diego.ramirez@gmail.com\",\n  \"address\": \"Av. Brasil 789, Lima\",\n  \"dni\": \"71234589\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Categoría",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:8080/api/categories/9",
+          "protocol": "",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "categories",
+            "9"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"category\": \"Chocolate\"\n}",
           "options": {
             "raw": {
               "language": "json"

@@ -30,4 +30,8 @@ public class ProductEntity {
 
     @Column(nullable = false)
     private Boolean active = true;
+
+    @ManyToOne
+    @JoinColumn(name = "category", nullable = false)
+    private Category category;
 }
