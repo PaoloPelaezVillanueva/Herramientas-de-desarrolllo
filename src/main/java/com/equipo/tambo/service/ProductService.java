@@ -47,6 +47,9 @@ public class ProductService {
         product.setDescription(request.getDescription());
         product.setCost(request.getCost());
         product.setStock(request.getStock());
+        if (request.getActive() != null) {
+            product.setActive(request.getActive());
+        }
 
         return toResponse(productRepository.save(product));
     }
@@ -59,6 +62,9 @@ public class ProductService {
         product.setDescription(request.getDescription());
         product.setCost(request.getCost());
         product.setStock(request.getStock());
+        if (request.getActive() != null) {
+            product.setActive(request.getActive());
+        }
 
         return toResponse(productRepository.save(product));
     }
