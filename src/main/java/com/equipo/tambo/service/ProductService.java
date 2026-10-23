@@ -2,7 +2,10 @@ package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.ProductRequest;
 import com.equipo.tambo.dto.ProductResponse;
+import com.equipo.tambo.entity.Category;
 import com.equipo.tambo.entity.ProductEntity;
+import com.equipo.tambo.entity.RoleEntity;
+import com.equipo.tambo.repository.CategoryRepository;
 import com.equipo.tambo.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     public List<ProductResponse> listProducts() {
         return productRepository.findAll()
@@ -43,6 +47,12 @@ public class ProductService {
     public ProductResponse createProduct(ProductRequest request) {
         ProductEntity product = new ProductEntity();
 
+        Category category = categoryRepository.findById(request.getCategory())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró la categoría con ID " + request.getCategory()
+                ));
+
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setCost(request.getCost());
@@ -50,6 +60,7 @@ public class ProductService {
         if (request.getActive() != null) {
             product.setActive(request.getActive());
         }
+        product.setCategory(category);
 
         return toResponse(productRepository.save(product));
     }
@@ -58,6 +69,12 @@ public class ProductService {
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         ProductEntity product = getProduct(id);
 
+        Category category = categoryRepository.findById(request.getCategory())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró la categoría con ID " + request.getCategory()
+                ));
+
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setCost(request.getCost());
@@ -65,6 +82,7 @@ public class ProductService {
         if (request.getActive() != null) {
             product.setActive(request.getActive());
         }
+        product.setCategory(category);
 
         return toResponse(productRepository.save(product));
     }
@@ -82,7 +100,8 @@ public class ProductService {
                 product.getDescription(),
                 product.getCost(),
                 product.getStock(),
-                product.getActive()
+                product.getActive(),
+                product.getCategory()
         );
     }
 }
