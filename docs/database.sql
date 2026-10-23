@@ -28,13 +28,20 @@ CREATE TABLE clients (
     CONSTRAINT uq_clients_email UNIQUE (email)
 );
 
+CREATE TABLE categories (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE products (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     description VARCHAR(250) NOT NULL,
     cost DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     stock BIGINT NOT NULL DEFAULT 0,
-    active BOOLEAN NOT NULL DEFAULT TRUE
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    category BIGINT NOT NULL,
+    CONSTRAINT fk_products_category FOREIGN KEY (category) REFERENCES categories(id)
 );
 
 CREATE TABLE sales (
@@ -69,17 +76,20 @@ INSERT INTO clients (name, lastname, email, address, dni) VALUES
 ('Lucía', 'Fernández', 'lucia.fernandez@gmail.com', 'Jr. Las Flores 456, Lima', '74561238'),
 ('Diego', 'Ramírez', 'diego.ramirez@gmail.com', 'Av. Brasil 789, Lima', '71234589');
 
-INSERT INTO products (name, description, cost, stock, active) VALUES
-('Inca Kola 500ml', 'Gaseosa Inca Kola de 500ml', 2.50, 50, TRUE),
-('Coca Cola 500ml', 'Gaseosa Coca Cola de 500ml', 2.50, 45, TRUE),
-('Agua San Luis 625ml', 'Agua mineral sin gas de 625ml', 1.80, 60, TRUE),
-('Papas Lays Clásicas 40g', 'Papas fritas Lays sabor clásico de 40g', 2.50, 35, TRUE),
-('Sublime Chocolate 30g', 'Chocolate Sublime con maní de 30g', 2.00, 40, TRUE),
-('Galletas Oreo 36g', 'Galletas Oreo con relleno de vainilla', 2.20, 30,TRUE),
-('Detergente Bolívar 400g', 'Detergente en polvo Bolívar de 400g', 4.90, 25, TRUE),
-('Papel Higiénico Elite 4 rollos', 'Paquete de papel higiénico Elite de 4 rollos', 8.50, 20, TRUE),
-('Leche Gloria 1L', 'Leche evaporada Gloria de 1 litro', 4.50, 30, TRUE),
-('Atún Florida 170g', 'Lata de atún Florida de 170g', 5.90, 25, TRUE);
+INSERT INTO categories (category) VALUES ('Abarrotes'), ('Lácteos'), ('Bebidas'), ('Panadería'), ('Snack'), ('Dulces'), ('Aseo');
+
+INSERT INTO products (name, description, cost, stock, active, category) VALUES
+('Pan de molde', 'Pan de molde suave', 6.80, 34, TRUE, 4),
+('Inca Kola 500ml', 'Gaseosa Inca Kola de 500ml', 2.50, 50, TRUE, 3),
+('Coca Cola 500ml', 'Gaseosa Coca Cola de 500ml', 2.50, 45, TRUE, 3),
+('Agua San Luis 625ml', 'Agua mineral sin gas de 625ml', 1.80, 60, TRUE, 3),
+('Papas Lays Clásicas 40g', 'Papas fritas Lays sabor clásico de 40g', 2.50, 35, TRUE, 5),
+('Sublime Chocolate 30g', 'Chocolate Sublime con maní de 30g', 2.00, 40, TRUE, 6),
+('Galletas Oreo 36g', 'Galletas Oreo con relleno de vainilla', 2.20, 30,TRUE, 6),
+('Detergente Bolívar 400g', 'Detergente en polvo Bolívar de 400g', 4.90, 25, TRUE, 7),
+('Papel Higiénico Elite 4 rollos', 'Paquete de papel higiénico Elite de 4 rollos', 8.50, 20, TRUE, 7),
+('Leche Gloria 1L', 'Leche evaporada Gloria de 1 litro', 4.50, 30, TRUE, 2),
+('Atún Florida 170g', 'Lata de atún Florida de 170g', 5.90, 25, TRUE, 1);
 
 INSERT INTO sales (client, date, user, total) VALUES
 (1, '2026-08-25 09:15:00', 2, 11.20),
