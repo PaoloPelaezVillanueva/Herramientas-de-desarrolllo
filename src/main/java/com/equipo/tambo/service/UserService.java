@@ -2,8 +2,8 @@ package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.UserRequest;
 import com.equipo.tambo.dto.UserResponse;
-import com.equipo.tambo.entity.RoleEntity;
-import com.equipo.tambo.entity.UserEntity;
+import com.equipo.tambo.entity.Role;
+import com.equipo.tambo.entity.User;
 import com.equipo.tambo.repository.RoleRepository;
 import com.equipo.tambo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class UserService {
         return toResponse(getUser(id));
     }
 
-    private UserEntity getUser(Long id) {
+    private User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -44,13 +44,13 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de usuario '" + request.getUser() + "' ya existe.");
         }
 
-        RoleEntity role = roleRepository.findById(request.getRole())
+        Role role = roleRepository.findById(request.getRole())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el rol con ID " + request.getRole()
                 ));
 
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setName(request.getName());
         user.setLastname(request.getLastname());
         user.setUser(request.getUser());
@@ -62,13 +62,13 @@ public class UserService {
 
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
-        RoleEntity role = roleRepository.findById(request.getRole())
+        Role role = roleRepository.findById(request.getRole())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el rol con ID " + request.getRole()
                 ));
 
-        UserEntity user = getUser(id);
+        User user = getUser(id);
 
         if (userRepository.existsByUserAndIdNot(request.getUser(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de usuario '" + request.getUser() + "' ya existe.");
@@ -85,11 +85,11 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id) {
-        UserEntity user = getUser(id);
+        User user = getUser(id);
         userRepository.delete(user);
     }
 
-    private UserResponse toResponse(UserEntity user) {
+    private UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getName(),

@@ -2,9 +2,7 @@ package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.CategoryRequest;
 import com.equipo.tambo.dto.CategoryResponse;
-import com.equipo.tambo.dto.ProductResponse;
 import com.equipo.tambo.entity.Category;
-import com.equipo.tambo.entity.ProductEntity;
 import com.equipo.tambo.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -3,8 +3,7 @@ package com.equipo.tambo.service;
 import com.equipo.tambo.dto.ProductRequest;
 import com.equipo.tambo.dto.ProductResponse;
 import com.equipo.tambo.entity.Category;
-import com.equipo.tambo.entity.ProductEntity;
-import com.equipo.tambo.entity.RoleEntity;
+import com.equipo.tambo.entity.Product;
 import com.equipo.tambo.repository.CategoryRepository;
 import com.equipo.tambo.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class ProductService {
         return toResponse(getProduct(id));
     }
 
-    private ProductEntity getProduct(Long id) {
+    private Product getProduct(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -45,7 +44,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponse createProduct(ProductRequest request) {
-        ProductEntity product = new ProductEntity();
+        Product product = new Product();
 
         Category category = categoryRepository.findById(request.getCategory())
                 .orElseThrow(() -> new ResponseStatusException(
@@ -67,7 +66,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponse updateProduct(Long id, ProductRequest request) {
-        ProductEntity product = getProduct(id);
+        Product product = getProduct(id);
 
         Category category = categoryRepository.findById(request.getCategory())
                 .orElseThrow(() -> new ResponseStatusException(
@@ -89,11 +88,11 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(Long id) {
-        ProductEntity product = getProduct(id);
+        Product product = getProduct(id);
         productRepository.delete(product);
     }
 
-    private ProductResponse toResponse(ProductEntity product) {
+    private ProductResponse toResponse(Product product) {
         return new ProductResponse(
                 product.getId(),
                 product.getName(),

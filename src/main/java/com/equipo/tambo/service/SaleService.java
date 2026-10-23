@@ -40,7 +40,7 @@ public class SaleService {
         return toResponse(getSale(id));
     }
 
-    private SaleEntity getSale(Long id) {
+    private Sale getSale(Long id) {
         return saleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -50,13 +50,13 @@ public class SaleService {
 
     @Transactional
     public SaleResponse createSale(SaleRequest request) {
-        UserEntity user = userRepository.findById(request.getUser())
+        User user = userRepository.findById(request.getUser())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el usuario con ID " + request.getUser()
                 ));
 
-        ClientEntity client = null;
+        Client client = null;
 
         if(request.getClient() != null) {
             client = clientRepository.findById(request.getClient())
@@ -66,7 +66,7 @@ public class SaleService {
                     ));
         }
 
-        SaleEntity sale = new SaleEntity();
+        Sale sale = new Sale();
 
         sale.setClient(client);
         sale.setUser(user);
@@ -81,15 +81,15 @@ public class SaleService {
 
     @Transactional
     public SaleResponse updateSale(Long id, SaleRequest request) {
-        SaleEntity sale = getSale(id);
+        Sale sale = getSale(id);
 
-        UserEntity user = userRepository.findById(request.getUser())
+        User user = userRepository.findById(request.getUser())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el usuario con ID " + request.getUser()
                 ));
 
-        ClientEntity client = null;
+        Client client = null;
 
         if(request.getClient() != null) {
             client = clientRepository.findById(request.getClient())
@@ -111,13 +111,13 @@ public class SaleService {
 
     @Transactional
     public void deleteSale(Long id) {
-        SaleEntity sale = getSale(id);
+        Sale sale = getSale(id);
         saleRepository.delete(sale);
     }
 
     @Transactional
     public SaleResponse updateSaleDetail(Long id, Long detailId, SaleDetailRequest request) {
-        SaleEntity sale = getSale(id);
+        Sale sale = getSale(id);
 
         saleDetailService.updateSaleDetail(sale, detailId, request);
 
@@ -128,22 +128,22 @@ public class SaleService {
 
     @Transactional
     public void deleteSaleDetail(Long id, Long detailId) {
-        SaleEntity sale = getSale(id);
+        Sale sale = getSale(id);
 
         saleDetailService.deleteSaleDetail(sale, detailId);
 
         recalculateTotal(sale);
     }
 
-    private void recalculateTotal(SaleEntity sale) {
+    private void recalculateTotal(Sale sale) {
         BigDecimal total = sale.getDetails().stream()
-                .map(SaleDetailEntity::getSubtotal)
+                .map(SaleDetail::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         sale.setTotal(total);
     }
 
-    private SaleResponse toResponse(SaleEntity sale) {
+    private SaleResponse toResponse(Sale sale) {
         List<SaleDetailResponse> detailResponses = sale.getDetails().stream()
                 .map(detail -> new SaleDetailResponse(
                         detail.getId(),

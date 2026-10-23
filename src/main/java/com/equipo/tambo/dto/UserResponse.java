@@ -1,6 +1,6 @@
 package com.equipo.tambo.dto;
 
-import com.equipo.tambo.entity.RoleEntity;
+import com.equipo.tambo.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +13,5 @@ public class UserResponse {
     private String name;
     private String lastname;
     private String user;
-    private RoleEntity role;
+    private Role role;
 }

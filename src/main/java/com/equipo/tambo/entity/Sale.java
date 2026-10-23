@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaleEntity {
+public class Sale {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,22 +22,22 @@ public class SaleEntity {
 
     @ManyToOne
     @JoinColumn(name = "client", nullable = true)
-    private ClientEntity client;
+    private Client client;
 
     @Column(nullable = false)
     private LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "user", nullable = false)
-    private UserEntity user;
+    private User user;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<SaleDetailEntity> details = new ArrayList<>();
+    private List<SaleDetail> details = new ArrayList<>();
 
-    public void addDetail(SaleDetailEntity detail) {
+    public void addDetail(SaleDetail detail) {
         details.add(detail);
         detail.setSale(this);
     }

@@ -2,8 +2,7 @@ package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.ClientRequest;
 import com.equipo.tambo.dto.ClientResponse;
-import com.equipo.tambo.entity.ClientEntity;
-import com.equipo.tambo.entity.UserEntity;
+import com.equipo.tambo.entity.Client;
 import com.equipo.tambo.repository.ClientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class ClientService {
         return toResponse(getClient(id));
     }
 
-    private ClientEntity getClient(Long id) {
+    private Client getClient(Long id) {
         return clientRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -46,7 +45,7 @@ public class ClientService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya está registrado.");
         }
 
-        ClientEntity client = new ClientEntity();
+        Client client = new Client();
         client.setName(request.getName());
         client.setLastname(request.getLastname());
         client.setEmail(request.getEmail());
@@ -58,7 +57,7 @@ public class ClientService {
 
     @Transactional
     public ClientResponse updateClient(Long id, ClientRequest request) {
-        ClientEntity client = getClient(id);
+        Client client = getClient(id);
 
         if (clientRepository.existsByDniAndIdNot(request.getDni(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya pertenece a otro cliente.");
@@ -75,11 +74,11 @@ public class ClientService {
 
     @Transactional
     public void deleteClient(Long id) {
-        ClientEntity client = getClient(id);
+        Client client = getClient(id);
         clientRepository.delete(client);
     }
 
-    private ClientResponse toResponse(ClientEntity client) {
+    private ClientResponse toResponse(Client client) {
         return new ClientResponse(
                 client.getId(),
                 client.getName(),
