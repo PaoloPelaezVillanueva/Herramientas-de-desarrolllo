@@ -1,5 +1,6 @@
 package com.equipo.tambo.dto;
 
+import com.equipo.tambo.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,6 @@ public class ProductResponse {
     private Integer stock;
 
     private Boolean active;
+
+    private Category category;
 }
