@@ -1,7 +1,6 @@
 package com.equipo.tambo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,5 +33,5 @@ public class UserEntity {
 
     @ManyToOne
     @JoinColumn(name = "role", nullable = false)
-    private RoleEntity role;
+    private Role role;
 }

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaleDetailEntity {
+public class SaleDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +19,11 @@ public class SaleDetailEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale", nullable = false)
-    private SaleEntity sale;
+    private Sale sale;
 
     @ManyToOne
     @JoinColumn(name = "product", nullable = false)
-    private ProductEntity product;
+    private Product product;
 
     @Column(nullable = false)
     private Long quantity;

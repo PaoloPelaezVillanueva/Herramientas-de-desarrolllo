@@ -1,7 +1,7 @@
 package com.equipo.tambo.dto;
 
-import com.equipo.tambo.entity.ClientEntity;
-import com.equipo.tambo.entity.UserEntity;
+import com.equipo.tambo.entity.Client;
+import com.equipo.tambo.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +16,8 @@ import java.util.List;
 public class SaleResponse {
     
     private Long id;
-    private ClientEntity client;
-    private UserEntity user;
+    private Client client;
+    private User user;
     private LocalDateTime date;
     private BigDecimal total;
     private List<SaleDetailResponse> details;

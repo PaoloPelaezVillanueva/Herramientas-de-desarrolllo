@@ -1,13 +1,11 @@
 package com.equipo.tambo.service;
 
 import com.equipo.tambo.dto.SaleDetailRequest;
-import com.equipo.tambo.dto.SaleDetailResponse;
-import com.equipo.tambo.entity.ProductEntity;
-import com.equipo.tambo.entity.SaleDetailEntity;
-import com.equipo.tambo.entity.SaleEntity;
+import com.equipo.tambo.entity.Product;
+import com.equipo.tambo.entity.SaleDetail;
+import com.equipo.tambo.entity.Sale;
 import com.equipo.tambo.repository.ProductRepository;
 import com.equipo.tambo.repository.SaleDetailRepository;
-import com.equipo.tambo.repository.SaleRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +23,7 @@ public class SaleDetailService {
     private final SaleDetailRepository saleDetailRepository;
     private final ProductRepository productRepository;
 
-    private SaleDetailEntity getSaleDetail(Long id) {
+    private SaleDetail getSaleDetail(Long id) {
         return saleDetailRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -34,8 +31,8 @@ public class SaleDetailService {
                 ));
     }
 
-    public void createSaleDetail(SaleEntity sale, @Valid SaleDetailRequest request) {
-        ProductEntity product = productRepository.findById(request.getProduct())
+    public void createSaleDetail(Sale sale, @Valid SaleDetailRequest request) {
+        Product product = productRepository.findById(request.getProduct())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el producto con ID " + request.getProduct()
@@ -51,7 +48,7 @@ public class SaleDetailService {
         product.setStock(product.getStock() - request.getQuantity().intValue());
         productRepository.save(product);
 
-        SaleDetailEntity saleDetail = new SaleDetailEntity();
+        SaleDetail saleDetail = new SaleDetail();
 
         saleDetail.setProduct(product);
         saleDetail.setQuantity(request.getQuantity());
@@ -62,7 +59,7 @@ public class SaleDetailService {
         sale.addDetail(saleDetail);
     }
 
-    public void replaceDetails(SaleEntity sale, List<SaleDetailRequest> requests) {
+    public void replaceDetails(Sale sale, List<SaleDetailRequest> requests) {
         sale.getDetails().clear();
 
         for (SaleDetailRequest request : requests) {
@@ -70,8 +67,8 @@ public class SaleDetailService {
         }
     }
 
-    public void updateSaleDetail(SaleEntity sale, Long id, SaleDetailRequest request) {
-        SaleDetailEntity saleDetail = getSaleDetail(id);
+    public void updateSaleDetail(Sale sale, Long id, SaleDetailRequest request) {
+        SaleDetail saleDetail = getSaleDetail(id);
 
         if(!saleDetail.getSale().getId().equals(sale.getId())) {
             throw new ResponseStatusException(
@@ -80,7 +77,7 @@ public class SaleDetailService {
             );
         }
 
-        ProductEntity product = productRepository.findById(request.getProduct())
+        Product product = productRepository.findById(request.getProduct())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el producto con ID " + request.getProduct()
@@ -96,8 +93,8 @@ public class SaleDetailService {
         saleDetail.setSubtotal(subtotal);
     }
 
-    public void deleteSaleDetail(SaleEntity sale, Long id) {
-        SaleDetailEntity saleDetail = getSaleDetail(id);
+    public void deleteSaleDetail(Sale sale, Long id) {
+        SaleDetail saleDetail = getSaleDetail(id);
 
         if(!saleDetail.getSale().getId().equals(sale.getId())) {
             throw new ResponseStatusException(
@@ -106,7 +103,7 @@ public class SaleDetailService {
             );
         }
 
-        ProductEntity product = saleDetail.getProduct();
+        Product product = saleDetail.getProduct();
         product.setStock(product.getStock() + saleDetail.getQuantity().intValue());
         productRepository.save(product);
 

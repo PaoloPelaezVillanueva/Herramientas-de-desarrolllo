@@ -1,8 +1,8 @@
 package com.equipo.tambo.repository;
 
-import com.equipo.tambo.entity.ProductEntity;
+import com.equipo.tambo.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository
-        extends JpaRepository<ProductEntity, Long> {
+        extends JpaRepository<Product, Long> {
 }
