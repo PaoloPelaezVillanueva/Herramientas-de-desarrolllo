@@ -10,7 +10,7 @@
 ## 👥 Integrantes del Equipo
 * **Paolo Peláez Villanueva** (Líder Técnico / Módulo Productos / DevOps)
 * **Adrian** (Módulo Ventas y Detalle de Venta)
-* **Renato Gutiérrez** (Arquitectura, Base de Datos y Configuración Cloud)
+* **Renato Gutiérrez** (Arquitectura y Base de Datos)
 * **Encalada** (Módulo Clientes)
 
 ---
