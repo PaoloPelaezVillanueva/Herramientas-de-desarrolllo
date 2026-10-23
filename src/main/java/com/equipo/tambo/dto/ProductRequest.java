@@ -32,6 +32,7 @@ public class ProductRequest {
     @NotNull(message = "El stock es obligatorio")
     @PositiveOrZero(message = "El stock no puede ser negativo")
     private Integer stock;
+    private Boolean active;
 
     private Long category;
 }
