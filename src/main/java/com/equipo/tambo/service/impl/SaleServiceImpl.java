@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SaleServiceImpl implements SaleService {
-
     private final SaleRepository saleRepository;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final SaleDetailService saleDetailService;
 
+    @Override
     public List<SaleResponse> listSales() {
         return saleRepository.findAll()
                 .stream()
@@ -38,6 +38,7 @@ public class SaleServiceImpl implements SaleService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public SaleResponse getById(Long id) {
         return toResponse(getSale(id));
     }
@@ -50,6 +51,7 @@ public class SaleServiceImpl implements SaleService {
                 ));
     }
 
+    @Override
     @Transactional
     public SaleResponse createSale(SaleRequest request) {
         User user = userRepository.findById(request.getUser())
@@ -81,6 +83,7 @@ public class SaleServiceImpl implements SaleService {
         return toResponse(saleRepository.save(sale));
     }
 
+    @Override
     @Transactional
     public SaleResponse updateSale(Long id, SaleRequest request) {
         Sale sale = getSale(id);
@@ -111,12 +114,14 @@ public class SaleServiceImpl implements SaleService {
         return toResponse(saleRepository.save(sale));
     }
 
+    @Override
     @Transactional
     public void deleteSale(Long id) {
         Sale sale = getSale(id);
         saleRepository.delete(sale);
     }
 
+    @Override
     @Transactional
     public SaleResponse updateSaleDetail(Long id, Long detailId, SaleDetailRequest request) {
         Sale sale = getSale(id);
@@ -128,6 +133,7 @@ public class SaleServiceImpl implements SaleService {
         return toResponse(sale);
     }
 
+    @Override
     @Transactional
     public void deleteSaleDetail(Long id, Long detailId) {
         Sale sale = getSale(id);
