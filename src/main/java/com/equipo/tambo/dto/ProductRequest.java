@@ -34,5 +34,6 @@ public class ProductRequest {
     private Integer stock;
     private Boolean active;
 
+    @NotNull(message = "La categoría del producto es obligatoria")
     private Long category;
 }
