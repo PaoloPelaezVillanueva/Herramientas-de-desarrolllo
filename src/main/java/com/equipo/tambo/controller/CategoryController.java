@@ -2,10 +2,7 @@ package com.equipo.tambo.controller;
 
 import com.equipo.tambo.dto.CategoryRequest;
 import com.equipo.tambo.dto.CategoryResponse;
-import com.equipo.tambo.dto.ProductRequest;
-import com.equipo.tambo.dto.ProductResponse;
 import com.equipo.tambo.service.CategoryService;
-import com.equipo.tambo.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
