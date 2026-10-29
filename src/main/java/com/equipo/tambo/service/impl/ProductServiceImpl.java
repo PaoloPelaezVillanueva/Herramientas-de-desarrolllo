@@ -49,21 +49,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse createProduct(ProductRequest request) {
         Product product = new Product();
-
-        Category category = categoryRepository.findById(request.getCategory())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró la categoría con ID " + request.getCategory()
-                ));
-
-        product.setName(request.getName());
-        product.setDescription(request.getDescription());
-        product.setCost(request.getCost());
-        product.setStock(request.getStock());
-        if (request.getActive() != null) {
-            product.setActive(request.getActive());
-        }
-        product.setCategory(category);
+        applyProductRequest(product, request);
 
         return toResponse(productRepository.save(product));
     }
@@ -72,21 +58,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = getProduct(id);
-
-        Category category = categoryRepository.findById(request.getCategory())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró la categoría con ID " + request.getCategory()
-                ));
-
-        product.setName(request.getName());
-        product.setDescription(request.getDescription());
-        product.setCost(request.getCost());
-        product.setStock(request.getStock());
-        if (request.getActive() != null) {
-            product.setActive(request.getActive());
-        }
-        product.setCategory(category);
+        applyProductRequest(product, request);
 
         return toResponse(productRepository.save(product));
     }
@@ -96,6 +68,27 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long id) {
         Product product = getProduct(id);
         productRepository.delete(product);
+    }
+
+    private void applyProductRequest(Product product, ProductRequest request) {
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setCost(request.getCost());
+        product.setStock(request.getStock());
+
+        if (request.getActive() != null) {
+            product.setActive(request.getActive());
+        }
+
+        product.setCategory(findCategoryOrThrow(request.getCategory()));
+    }
+
+    private Category findCategoryOrThrow(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró la categoría con ID " + id
+                ));
     }
 
     private ProductResponse toResponse(Product product) {
