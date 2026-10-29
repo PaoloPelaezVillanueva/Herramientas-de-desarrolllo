@@ -222,7 +222,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"test\",\n  \"description\": \"test\",\n  \"cost\": 2.50,\n  \"stock\": 50,\n  \"active\": true\n}",
+          "raw": "{\n  \"name\": \"test\",\n  \"description\": \"test\",\n  \"cost\": 2.50,\n  \"stock\": 50,\n  \"active\": true,\n  \"category\": 8\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -252,7 +252,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"client\": 1,\n  \"user\": 1,\n  \"details\": [\n    {\n      \"product\": 1,\n      \"quantity\": 15\n    },\n    {\n      \"product\": 2,\n      \"quantity\": 20\n    }\n  ]\n}",
+          "raw": "{\n  \"client\": 1,\n  \"user\": 1,\n  \"details\": [\n    {\n      \"product\": 11,\n      \"quantity\": 20\n    }\n  ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -495,7 +495,7 @@
         "header": [],
         "description": "",
         "url": {
-          "raw": "localhost:8080/api/products/10",
+          "raw": "localhost:8080/api/products/11",
           "protocol": "",
           "host": [
             "localhost:8080"
@@ -503,14 +503,14 @@
           "path": [
             "api",
             "products",
-            "10"
+            "11"
           ],
           "query": [],
           "variable": []
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Atún Florida 170g\",\n  \"description\": \"Lata de atún Florida de 170g\",\n  \"cost\": 5.90,\n  \"stock\": 25,\n  \"active\": true\n}",
+          "raw": "{\n  \"name\": \"Atún Florida 170g\",\n  \"description\": \"Lata de atún Florida de 170g\",\n  \"cost\": 5.90,\n  \"stock\": 20,\n  \"active\": false,\n  \"category\": 1\n}",
           "options": {
             "raw": {
               "language": "json"
