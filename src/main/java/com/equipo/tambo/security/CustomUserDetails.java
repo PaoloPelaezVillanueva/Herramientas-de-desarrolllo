@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 public class CustomUserDetails implements UserDetails {
     private final User user;
@@ -18,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = user.getRole().getRole();
+        String role = user.getRole().getRole().trim().toUpperCase(Locale.ROOT);
         String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
 
         return List.of(new SimpleGrantedAuthority(authority));

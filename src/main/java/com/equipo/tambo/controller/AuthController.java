@@ -3,6 +3,7 @@ package com.equipo.tambo.controller;
 import com.equipo.tambo.dto.AuthResponse;
 import com.equipo.tambo.dto.LoginRequest;
 import com.equipo.tambo.dto.RegisterRequest;
+import com.equipo.tambo.dto.UserResponse;
 import com.equipo.tambo.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 }
