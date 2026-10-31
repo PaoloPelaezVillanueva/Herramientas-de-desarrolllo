@@ -1,9 +1,6 @@
 package com.equipo.tambo.controller;
 
-import com.equipo.tambo.dto.AuthResponse;
-import com.equipo.tambo.dto.LoginRequest;
-import com.equipo.tambo.dto.RegisterRequest;
-import com.equipo.tambo.dto.UserResponse;
+import com.equipo.tambo.dto.*;
 import com.equipo.tambo.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +28,12 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
         return ResponseEntity.ok(authService.getCurrentUser(authentication.getName()));
+    }
+
+    @PatchMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request, Authentication authentication) {
+        authService.changePassword(authentication.getName(), request);
+
+        return ResponseEntity.noContent().build();
     }
 }
