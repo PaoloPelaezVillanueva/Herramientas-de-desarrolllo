@@ -30,6 +30,11 @@
         <java.version>21</java.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
+		<!-- Configuración de SonarQube Cloud -->
+		<sonar.projectKey>PaoloPelaezVillanueva_Herramientas-de-desarrolllo</sonar.projectKey>
+		<sonar.projectName>Herramientas-de-desarrolllo</sonar.projectName>
+		<sonar.organization>paolopelaezvillanueva</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 	<dependencies>
 		<dependency>
@@ -82,10 +87,36 @@
 
 	<build>
 		<plugins>
+
+			<!-- JaCoCo: genera el reporte de cobertura -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Plugin de Spring Boot -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- Plugin de compilación -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -105,6 +136,7 @@
 							</annotationProcessorPaths>
 						</configuration>
 					</execution>
+
 					<execution>
 						<id>default-testCompile</id>
 						<phase>test-compile</phase>
@@ -122,6 +154,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 
