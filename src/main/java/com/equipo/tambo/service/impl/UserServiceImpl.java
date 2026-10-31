@@ -43,29 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse createUser(UserRequest request) {
-        if (userRepository.existsByUser(request.getUser())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de usuario '" + request.getUser() + "' ya existe.");
-        }
-
-        Role role = roleRepository.findById(request.getRole())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró el rol con ID " + request.getRole()
-                ));
-
-        User user = new User();
-        user.setName(request.getName());
-        user.setLastname(request.getLastname());
-        user.setUser(request.getUser());
-        user.setPassword(request.getPassword());
-        user.setRole(role);
-
-        return toResponse(userRepository.save(user));
-    }
-
-    @Override
-    @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
         Role role = roleRepository.findById(request.getRole())
                 .orElseThrow(() -> new ResponseStatusException(

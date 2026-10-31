@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SaleResponse {
-    
+
     private Long id;
     private Client client;
     private User user;
