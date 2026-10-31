@@ -8,4 +8,5 @@ import com.equipo.tambo.dto.UserResponse;
 public interface AuthService {
     AuthResponse login(LoginRequest request);
     UserResponse register(RegisterRequest request);
+    UserResponse getCurrentUser(String username);
 }
