@@ -1,9 +1,6 @@
 package com.equipo.tambo.service.impl;
 
-import com.equipo.tambo.dto.AuthResponse;
-import com.equipo.tambo.dto.LoginRequest;
-import com.equipo.tambo.dto.RegisterRequest;
-import com.equipo.tambo.dto.UserResponse;
+import com.equipo.tambo.dto.*;
 import com.equipo.tambo.entity.Role;
 import com.equipo.tambo.entity.User;
 import com.equipo.tambo.repository.RoleRepository;
@@ -74,10 +71,47 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(String username) {
-        User user = userRepository.findByUser(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+        User user = findUserByUsername(username);
 
         return toUserResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String username, ChangePasswordRequest request) {
+        User user = findUserByUsername(username);
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La contraseña actual es incorrecta"
+            );
+        }
+
+        if (!request.newPassword().equals(request.confirmPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Las nuevas contraseñas no coinciden"
+            );
+        }
+
+        if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La nueva contraseña debe ser diferente a la actual"
+            );
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+
+        userRepository.save(user);
+    }
+
+    private User findUserByUsername(String username) {
+        return userRepository.findByUser(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Usuario no encontrado")
+                );
     }
 
     private AuthResponse toResponse(CustomUserDetails userDetails) {
