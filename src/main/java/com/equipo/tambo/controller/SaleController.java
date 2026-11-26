@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping({"/api/sales", "/api/v1/ventas"})
@@ -34,9 +35,10 @@ public class SaleController {
 
     @PostMapping
     public ResponseEntity<SaleResponse> createSale(@Valid @RequestBody SaleRequest request,
-                                                    JwtAuthenticationToken authentication) {
+                                                    JwtAuthenticationToken authentication,
+                                                    @RequestHeader(name = "Idempotency-Key", required = false) UUID requestKey) {
         requireOwnUser(request, authentication);
-        SaleResponse sale = saleService.createSale(request);
+        SaleResponse sale = saleService.createSale(request, requestKey);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(sale);
     }

@@ -28,7 +28,7 @@ class SaleControllerTest {
         request.setUser(2L);
 
         ResponseStatusException error = assertThrows(ResponseStatusException.class,
-                () -> controller.createSale(request, authentication(1L, "ROLE_USER")));
+                () -> controller.createSale(request, authentication(1L, "ROLE_USER"), null));
 
         assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
         verifyNoInteractions(saleService);
@@ -52,9 +52,9 @@ class SaleControllerTest {
         SaleRequest request = new SaleRequest();
         request.setUser(1L);
 
-        controller.createSale(request, authentication(1L, "ROLE_USER"));
+        controller.createSale(request, authentication(1L, "ROLE_USER"), null);
 
-        verify(saleService).createSale(request);
+        verify(saleService).createSale(request, null);
     }
 
     private JwtAuthenticationToken authentication(Long userId, String role) {

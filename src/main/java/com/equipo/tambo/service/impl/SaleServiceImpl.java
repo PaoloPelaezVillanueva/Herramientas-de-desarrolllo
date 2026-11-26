@@ -7,6 +7,7 @@ import com.equipo.tambo.dto.SaleResponse;
 import com.equipo.tambo.entity.*;
 import com.equipo.tambo.repository.ClientRepository;
 import com.equipo.tambo.repository.SaleRepository;
+import com.equipo.tambo.repository.SaleSubmissionRepository;
 import com.equipo.tambo.repository.UserRepository;
 import com.equipo.tambo.service.SaleDetailService;
 import com.equipo.tambo.service.SaleService;
@@ -17,15 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.HexFormat;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SaleServiceImpl implements SaleService {
+    private static final BigDecimal MAX_TOTAL = new BigDecimal("99999999.99");
+
     private final SaleRepository saleRepository;
+    private final SaleSubmissionRepository submissionRepository;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final SaleDetailService saleDetailService;
@@ -58,12 +67,26 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
-    public SaleResponse createSale(SaleRequest request) {
-        User user = userRepository.findById(request.getUser())
+    public SaleResponse createSale(SaleRequest request, UUID requestKey) {
+        // Lock the seller row first so retries with the same key are checked serially.
+        var seller = requestKey == null ? userRepository.findById(request.getUser())
+                : userRepository.findByIdForUpdate(request.getUser());
+        User user = seller
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el usuario con ID " + request.getUser()
                 ));
+
+        String submissionId = null;
+        String fingerprint = null;
+        if (requestKey != null) {
+            submissionId = user.getId() + ":" + requestKey;
+            fingerprint = fingerprint(request);
+            SaleSubmission previous = submissionRepository.findById(submissionId).orElse(null);
+            if (previous != null) {
+                return replaySale(previous, fingerprint);
+            }
+        }
 
         Client client = null;
 
@@ -81,11 +104,40 @@ public class SaleServiceImpl implements SaleService {
         sale.setUser(user);
         sale.setDate(LocalDateTime.now());
 
-        request.getDetails().forEach(d -> saleDetailService.createSaleDetail(sale, d));
+        saleDetailService.replaceDetails(sale, request.getDetails());
 
         recalculateTotal(sale);
 
-        return toResponse(saleRepository.save(sale));
+        Sale saved = saleRepository.save(sale);
+        if (submissionId != null) {
+            submissionRepository.save(new SaleSubmission(submissionId, fingerprint, saved.getId()));
+        }
+        return toResponse(saved);
+    }
+
+    private SaleResponse replaySale(SaleSubmission previous, String fingerprint) {
+        if (!previous.getFingerprint().equals(fingerprint)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "La clave de compra ya se usó con datos distintos.");
+        }
+        return saleRepository.findById(previous.getSaleId())
+                .map(this::toResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.GONE,
+                        "La venta de esta compra ya fue eliminada."));
+    }
+
+    private String fingerprint(SaleRequest request) {
+        StringBuilder contents = new StringBuilder().append(request.getClient());
+        for (SaleDetailRequest detail : request.getDetails()) {
+            contents.append(':').append(detail.getProduct()).append(':').append(detail.getQuantity());
+        }
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256")
+                    .digest(contents.toString().getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 no está disponible", e);
+        }
     }
 
     @Override
@@ -154,6 +206,10 @@ public class SaleServiceImpl implements SaleService {
                 .map(SaleDetail::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        if (total.compareTo(MAX_TOTAL) > 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "El total supera el importe máximo admitido para una venta.");
+        }
         sale.setTotal(total);
     }
 

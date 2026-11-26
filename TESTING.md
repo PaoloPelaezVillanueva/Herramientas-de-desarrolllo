@@ -30,3 +30,11 @@ También puedes ejecutar la colección con Newman mientras la API de prueba est�
 ```powershell
 npx --yes newman run docs/postman/Tambo-Postman-pruebas.json
 ```
+
+### Reintentos al registrar ventas
+
+En `POST /api/sales` se puede enviar la cabecera `Idempotency-Key` con un UUID nuevo por compra. Para reintentar la misma compra, vuelve a enviar el mismo cuerpo y la misma clave. La API devuelve el mismo ID de venta y no descuenta stock otra vez. Reutilizar la clave con datos distintos devuelve `409`. Si la venta ya fue eliminada, el reintento devuelve `410`.
+
+H2 crea la tabla de claves durante el arranque local. Para usar la cabecera con una base MySQL existente, aplica primero el SQL de [sale-submissions.sql](docs/sale-submissions.sql).
+
+Con Node.js 22 y la API H2 recién iniciada, ejecuta las pruebas de compras simultáneas, reintentos, cantidades y precios con `node docs/postman/verificar-ventas.mjs`.
