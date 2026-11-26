@@ -2,6 +2,7 @@ package com.equipo.tambo.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,6 @@ public class ClientRequest {
     private String address;
 
     @NotBlank(message = "El DNI es obligatorio")
-    @Size(min = 8, max = 10, message = "El DNI debe tener entre 8 y 10 dígitos")
+    @Pattern(regexp = "[0-9]{8,10}", message = "El DNI debe tener entre 8 y 10 dígitos")
     private String dni;
 }

@@ -45,10 +45,15 @@ public class SaleServiceImpl implements SaleService {
 
     private Sale getSale(Long id) {
         return saleRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró la venta con ID " + id
-                ));
+                .orElseThrow(() -> saleNotFound(id));
+    }
+
+    private Sale getSaleForUpdate(Long id) {
+        return saleRepository.findByIdForUpdate(id).orElseThrow(() -> saleNotFound(id));
+    }
+
+    private ResponseStatusException saleNotFound(Long id) {
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la venta con ID " + id);
     }
 
     @Override
@@ -86,7 +91,7 @@ public class SaleServiceImpl implements SaleService {
     @Override
     @Transactional
     public SaleResponse updateSale(Long id, SaleRequest request) {
-        Sale sale = getSale(id);
+        Sale sale = getSaleForUpdate(id);
 
         User user = userRepository.findById(request.getUser())
                 .orElseThrow(() -> new ResponseStatusException(
@@ -117,14 +122,15 @@ public class SaleServiceImpl implements SaleService {
     @Override
     @Transactional
     public void deleteSale(Long id) {
-        Sale sale = getSale(id);
+        Sale sale = getSaleForUpdate(id);
+        saleDetailService.restoreStock(sale);
         saleRepository.delete(sale);
     }
 
     @Override
     @Transactional
     public SaleResponse updateSaleDetail(Long id, Long detailId, SaleDetailRequest request) {
-        Sale sale = getSale(id);
+        Sale sale = getSaleForUpdate(id);
 
         saleDetailService.updateSaleDetail(sale, detailId, request);
 
@@ -136,7 +142,7 @@ public class SaleServiceImpl implements SaleService {
     @Override
     @Transactional
     public void deleteSaleDetail(Long id, Long detailId) {
-        Sale sale = getSale(id);
+        Sale sale = getSaleForUpdate(id);
 
         saleDetailService.deleteSaleDetail(sale, detailId);
 

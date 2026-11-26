@@ -1,11 +1,16 @@
 package com.equipo.tambo.entity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OptimisticLockType;
+import org.hibernate.annotations.OptimisticLocking;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
+@DynamicUpdate
+@OptimisticLocking(type = OptimisticLockType.ALL)
 @Getter
 @Setter
 @NoArgsConstructor

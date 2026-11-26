@@ -30,7 +30,8 @@ CREATE TABLE clients (
 
 CREATE TABLE categories (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    category VARCHAR(100) NOT NULL
+    category VARCHAR(100) NOT NULL,
+    CONSTRAINT uq_categories_name UNIQUE (category)
 );
 
 CREATE TABLE products (

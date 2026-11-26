@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface SaleDetailService {
     void createSaleDetail(Sale sale, @Valid SaleDetailRequest request);
+    void restoreStock(Sale sale);
     void replaceDetails(Sale sale, List<SaleDetailRequest> requests);
     void updateSaleDetail(Sale sale, Long id, SaleDetailRequest request);
     void deleteSaleDetail(Sale sale, Long id);

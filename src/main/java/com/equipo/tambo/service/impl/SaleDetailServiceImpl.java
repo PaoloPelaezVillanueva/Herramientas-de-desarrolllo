@@ -2,10 +2,9 @@ package com.equipo.tambo.service.impl;
 
 import com.equipo.tambo.dto.SaleDetailRequest;
 import com.equipo.tambo.entity.Product;
-import com.equipo.tambo.entity.SaleDetail;
 import com.equipo.tambo.entity.Sale;
+import com.equipo.tambo.entity.SaleDetail;
 import com.equipo.tambo.repository.ProductRepository;
-import com.equipo.tambo.repository.SaleDetailRepository;
 import com.equipo.tambo.service.SaleDetailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,50 +20,56 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SaleDetailServiceImpl implements SaleDetailService {
-    private final SaleDetailRepository saleDetailRepository;
     private final ProductRepository productRepository;
 
-    private SaleDetail getSaleDetail(Long id) {
-        return saleDetailRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró el detalle de venta con ID " + id
-                ));
+    private SaleDetail getSaleDetail(Sale sale, Long id) {
+        return sale.getDetails().stream()
+                .filter(detail -> id.equals(detail.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "No se encontró el detalle con ID " + id + " en la venta con ID " + sale.getId()));
+    }
+
+    private Product getProduct(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "No se encontró el producto con ID " + id));
+    }
+
+    private void adjustStock(Product product, long unitsToDeduct) {
+        long remaining = product.getStock() - unitsToDeduct;
+        if (remaining < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Stock insuficiente para '" + product.getName() + "'. Stock disponible: " + product.getStock());
+        }
+        if (remaining > Integer.MAX_VALUE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "El stock resultante supera el límite para '" + product.getName() + "'.");
+        }
+        product.setStock((int) remaining);
+        productRepository.save(product);
     }
 
     @Override
     public void createSaleDetail(Sale sale, @Valid SaleDetailRequest request) {
-        Product product = productRepository.findById(request.getProduct())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró el producto con ID " + request.getProduct()
-                ));
+        Product product = getProduct(request.getProduct());
+        adjustStock(product, request.getQuantity());
+        SaleDetail detail = new SaleDetail();
+        setDetail(detail, product, request.getQuantity());
+        sale.addDetail(detail);
+    }
 
-        if (product.getStock() < request.getQuantity()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Stock insuficiente para '" + product.getName() + "'. Stock disponible: " + product.getStock()
-            );
+    @Override
+    public void restoreStock(Sale sale) {
+        for (SaleDetail detail : sale.getDetails()) {
+            adjustStock(detail.getProduct(), -detail.getQuantity());
         }
-
-        product.setStock(product.getStock() - request.getQuantity().intValue());
-        productRepository.save(product);
-
-        SaleDetail saleDetail = new SaleDetail();
-
-        saleDetail.setProduct(product);
-        saleDetail.setQuantity(request.getQuantity());
-
-        BigDecimal subtotal = product.getCost().multiply(BigDecimal.valueOf(request.getQuantity()));
-        saleDetail.setSubtotal(subtotal);
-
-        sale.addDetail(saleDetail);
     }
 
     @Override
     public void replaceDetails(Sale sale, List<SaleDetailRequest> requests) {
+        restoreStock(sale);
         sale.getDetails().clear();
-
         for (SaleDetailRequest request : requests) {
             createSaleDetail(sale, request);
         }
@@ -72,46 +77,28 @@ public class SaleDetailServiceImpl implements SaleDetailService {
 
     @Override
     public void updateSaleDetail(Sale sale, Long id, SaleDetailRequest request) {
-        SaleDetail saleDetail = getSaleDetail(id);
-
-        if(!saleDetail.getSale().getId().equals(sale.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "El detalle con ID " + id + " no pertenece a la venta con ID " + sale.getId()
-            );
+        SaleDetail detail = getSaleDetail(sale, id);
+        Product previous = detail.getProduct();
+        Product product = getProduct(request.getProduct());
+        if (previous.getId().equals(product.getId())) {
+            adjustStock(product, request.getQuantity() - detail.getQuantity());
+        } else {
+            adjustStock(product, request.getQuantity());
+            adjustStock(previous, -detail.getQuantity());
         }
-
-        Product product = productRepository.findById(request.getProduct())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "No se encontró el producto con ID " + request.getProduct()
-                ));
-
-        saleDetail.setProduct(product);
-        saleDetail.setQuantity(request.getQuantity());
-
-        BigDecimal subtotal = saleDetail.getProduct()
-                .getCost()
-                .multiply(BigDecimal.valueOf(request.getQuantity()));
-
-        saleDetail.setSubtotal(subtotal);
+        setDetail(detail, product, request.getQuantity());
     }
 
     @Override
     public void deleteSaleDetail(Sale sale, Long id) {
-        SaleDetail saleDetail = getSaleDetail(id);
+        SaleDetail detail = getSaleDetail(sale, id);
+        adjustStock(detail.getProduct(), -detail.getQuantity());
+        sale.getDetails().remove(detail);
+    }
 
-        if(!saleDetail.getSale().getId().equals(sale.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "El detalle con ID " + id + " no pertenece a la venta con ID " + sale.getId()
-            );
-        }
-
-        Product product = saleDetail.getProduct();
-        product.setStock(product.getStock() + saleDetail.getQuantity().intValue());
-        productRepository.save(product);
-
-        sale.getDetails().remove(saleDetail);
+    private void setDetail(SaleDetail detail, Product product, long quantity) {
+        detail.setProduct(product);
+        detail.setQuantity(quantity);
+        detail.setSubtotal(product.getCost().multiply(BigDecimal.valueOf(quantity)));
     }
 }

@@ -4,8 +4,10 @@ import com.equipo.tambo.dto.CategoryRequest;
 import com.equipo.tambo.dto.CategoryResponse;
 import com.equipo.tambo.entity.Category;
 import com.equipo.tambo.repository.CategoryRepository;
+import com.equipo.tambo.repository.ProductRepository;
 import com.equipo.tambo.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public List<CategoryResponse> listCategories() {
@@ -44,26 +47,53 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponse createCategory(CategoryRequest request) {
+        if (categoryRepository.existsByCategory(request.getCategory())) {
+            throw duplicateCategory();
+        }
         Category category = new Category();
         category.setCategory(request.getCategory());
 
-        return toResponse(categoryRepository.save(category));
+        return saveCategory(category);
     }
 
     @Override
     @Transactional
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
         Category category = getCategory(id);
+        if (categoryRepository.existsByCategoryAndIdNot(request.getCategory(), id)) {
+            throw duplicateCategory();
+        }
         category.setCategory(request.getCategory());
 
-        return toResponse(categoryRepository.save(category));
+        return saveCategory(category);
+    }
+
+    private CategoryResponse saveCategory(Category category) {
+        try {
+            return toResponse(categoryRepository.saveAndFlush(category));
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de la categoría ya existe.", ex);
+        }
+    }
+
+    private ResponseStatusException duplicateCategory() {
+        return new ResponseStatusException(HttpStatus.CONFLICT, "El nombre de la categoría ya existe.");
     }
 
     @Override
     @Transactional
     public void deleteCategory(Long id) {
         Category category = getCategory(id);
-        categoryRepository.delete(category);
+        String message = "No se puede eliminar la categoría porque tiene productos asociados.";
+        if (productRepository.existsByCategoryId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, message);
+        }
+        try {
+            categoryRepository.delete(category);
+            categoryRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, message, ex);
+        }
     }
 
     private CategoryResponse toResponse(Category category) {

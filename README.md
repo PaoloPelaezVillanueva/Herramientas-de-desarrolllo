@@ -197,7 +197,7 @@ docker run -d \
 | :--- | :--- | :--- | :---: |
 | `GET` | `/api/users` | Listar colaboradores y cajeros | `200 OK` |
 | `GET` | `/api/users/{id}` | Obtener información de usuario | `200 OK` |
-| `POST` | `/api/users` | Crear credencial con rol asignado | `201 Created` |
+| `POST` | `/api/auth/register` | Registrar un usuario con rol USER (requiere ADMIN) | `201 Created` |
 | `PUT` | `/api/users/{id}` | Actualizar datos del usuario | `200 OK` |
 | `DELETE` | `/api/users/{id}` | Dar de baja usuario | `204 No Content` |
 

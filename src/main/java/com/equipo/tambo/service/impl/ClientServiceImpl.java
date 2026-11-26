@@ -5,6 +5,7 @@ import com.equipo.tambo.dto.ClientResponse;
 import com.equipo.tambo.entity.Client;
 import com.equipo.tambo.repository.ClientRepository;
 import com.equipo.tambo.service.ClientService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +82,13 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public void deleteClient(Long id) {
         Client client = getClient(id);
-        clientRepository.delete(client);
+        try {
+            clientRepository.delete(client);
+            clientRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "No se puede eliminar el cliente porque tiene ventas asociadas.", ex);
+        }
     }
 
     private ClientResponse toResponse(Client client) {
