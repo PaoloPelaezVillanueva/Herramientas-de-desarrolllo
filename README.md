@@ -1,5 +1,14 @@
 # 🏪 Tambo Backend — Sistema de Gestión Comercial y Punto de Venta (POS)
 
+API REST de punto de venta para catálogo, clientes, inventario y ventas. Proyecto académico en equipo con Java, Spring Boot y MySQL. **Aporte de Paolo:** módulo de productos y DevOps. Consulta [el flujo de CI](https://github.com/PaoloPelaezVillanueva/Herramientas-de-desarrolllo/actions).
+
+## Probar con una base MySQL local
+
+1. En una instancia MySQL 8 de pruebas, ejecuta [`docs/database.sql`](docs/database.sql) con un usuario autorizado para crear la base. El script recrea `tambo_db` y carga datos de ejemplo. Úsalo en una instancia desechable.
+2. Define `SPRING_DATASOURCE_URL` con `jdbc:mysql://localhost:3306/tambo_db`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD` con tus credenciales de desarrollo, y `JWT_SECRET` con una clave aleatoria exclusiva de ese entorno.
+3. Con Java 21, ejecuta `sh ./mvnw spring-boot:run` en Linux/macOS o `mvnw.cmd spring-boot:run` en Windows.
+4. Usa `POST /api/auth/login` con un usuario del entorno local y el token de respuesta como `Authorization: Bearer <token>` para probar `GET /api/products`. El catálogo devuelve productos de ejemplo.
+
 > **Universidad Tecnológica del Perú (UTP)**  
 > **Curso:** Herramientas de Desarrollo (2026)  
 > **Docente Auditor:** Ing. Renzo Romero  
