@@ -5,6 +5,7 @@ import com.equipo.tambo.dto.ClientResponse;
 import com.equipo.tambo.entity.Client;
 import com.equipo.tambo.repository.ClientRepository;
 import com.equipo.tambo.service.ClientService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,15 +50,10 @@ public class ClientServiceImpl implements ClientService {
         if (clientRepository.existsByDni(request.getDni())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya está registrado.");
         }
+        requireAvailableEmail(clientRepository.existsByEmailIgnoreCase(request.getEmail()));
 
         Client client = new Client();
-        client.setName(request.getName());
-        client.setLastname(request.getLastname());
-        client.setEmail(request.getEmail());
-        client.setAddress(request.getAddress());
-        client.setDni(request.getDni());
-
-        return toResponse(clientRepository.save(client));
+        return saveClient(client, request);
     }
 
     @Override
@@ -68,14 +64,33 @@ public class ClientServiceImpl implements ClientService {
         if (clientRepository.existsByDniAndIdNot(request.getDni(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI " + request.getDni() + " ya pertenece a otro cliente.");
         }
+        requireAvailableEmail(clientRepository.existsByEmailIgnoreCaseAndIdNot(request.getEmail(), id));
 
+        return saveClient(client, request);
+    }
+
+    private void requireAvailableEmail(boolean exists) {
+        if (exists) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El correo ya pertenece a otro cliente.");
+        }
+    }
+
+    private ClientResponse saveClient(Client client, ClientRequest request) {
         client.setName(request.getName());
         client.setLastname(request.getLastname());
         client.setEmail(request.getEmail());
-        client.setAddress(request.getAddress());
+        client.setAddress(request.getAddress() == null ? "" : request.getAddress());
         client.setDni(request.getDni());
 
-        return toResponse(clientRepository.save(client));
+        try {
+            return toResponse(clientRepository.saveAndFlush(client));
+        } catch (DataIntegrityViolationException ex) {
+            if (ex.getCause() instanceof ConstraintViolationException violation
+                    && violation.getKind() == ConstraintViolationException.ConstraintKind.UNIQUE) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "El correo o DNI ya está registrado.");
+            }
+            throw ex;
+        }
     }
 
     @Override

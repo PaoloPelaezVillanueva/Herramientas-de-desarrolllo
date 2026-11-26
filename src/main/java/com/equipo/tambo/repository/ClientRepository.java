@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     boolean existsByDni(String dni);
     boolean existsByDniAndIdNot(String dni, Long id);
+    boolean existsByEmailIgnoreCase(String email);
+    boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
 }

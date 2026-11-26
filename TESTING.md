@@ -37,4 +37,13 @@ En `POST /api/sales` se puede enviar la cabecera `Idempotency-Key` con un UUID n
 
 H2 crea la tabla de claves durante el arranque local. Para usar la cabecera con una base MySQL existente, aplica primero el SQL de [sale-submissions.sql](docs/sale-submissions.sql).
 
-Con Node.js 22 y la API H2 recién iniciada, ejecuta las pruebas de compras simultáneas, reintentos, cantidades y precios con `node docs/postman/verificar-ventas.mjs`.
+Con Node.js 22 y una base de pruebas recién inicializada, ejecuta las pruebas de compras simultáneas, reintentos, cantidades y precios con `node docs/postman/verificar-ventas.mjs`. Ejecuta el script y la colección por separado, con datos iniciales nuevos para cada uno. La colección usa IDs fijos.
+
+### Unicidad del catálogo y de clientes en MySQL
+
+Para que dos solicitudes simultáneas no puedan registrar el mismo nombre de categoría o DNI, el esquema debe tener las restricciones de [catalog-unique-keys.sql](docs/catalog-unique-keys.sql). Antes de ejecutar la migración, comprueba que estas consultas no devuelvan filas y revisa las restricciones existentes para evitar crearlas dos veces.
+
+```sql
+SELECT category FROM categories GROUP BY category HAVING COUNT(*) > 1;
+SELECT dni FROM clients GROUP BY dni HAVING COUNT(*) > 1;
+```

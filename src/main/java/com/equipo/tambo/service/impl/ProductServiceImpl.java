@@ -80,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
 
     private void applyProductRequest(Product product, ProductRequest request) {
         product.setName(request.getName());
-        product.setDescription(request.getDescription());
+        product.setDescription(request.getDescription() == null ? "" : request.getDescription());
         product.setCost(request.getCost());
         product.setStock(request.getStock());
 

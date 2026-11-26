@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 
-// Run only against the local H2 server started by iniciar-api-pruebas.ps1.
+// Point the local API only at a disposable database seeded with e2e-data.sql.
 const baseUrl = 'http://127.0.0.1:18080/api';
 let adminToken;
 
@@ -41,6 +41,43 @@ function sale(productId, quantity, user = 1) {
 
 adminToken = await login('admin_test', 'AdminTest123!');
 const cashierToken = await login('cajero_test', 'AdminTest123!');
+
+{
+    const body = { name: 'Cliente', lastname: 'Prueba', dni: '87654321' };
+    const email = 'prueba-' + randomUUID() + '@example.test';
+    await api('POST', '/clients', { body, status: 400 });
+    const { data: created } = await api('POST', '/clients', { body: { ...body, email }, status: 201 });
+    assert.equal(created.address, '');
+    await api('POST', '/clients', { body: { ...body, dni: '87654322', email }, status: 409 });
+    await api('DELETE', '/clients/' + created.id, { status: 204 });
+
+    const simultaneous = await Promise.all([
+        api('POST', '/clients', { body: { ...body, email } }),
+        api('POST', '/clients', { body: { ...body, dni: '87654322', email } })
+    ]);
+    assert.deepEqual(simultaneous.map(result => result.status).sort(), [201, 409]);
+    const savedClient = simultaneous.find(result => result.status === 201).data;
+    await api('DELETE', '/clients/' + savedClient.id, { status: 204 });
+    console.log('OK: Clientes valida el correo, rechaza duplicados simultáneos y acepta dirección omitida.');
+}
+
+{
+    const category = { category: 'Prueba ' + randomUUID() };
+    const categories = await Promise.all([
+        api('POST', '/categories', { body: category }),
+        api('POST', '/categories', { body: category })
+    ]);
+    assert.deepEqual(categories.map(result => result.status).sort(), [201, 409]);
+    await api('DELETE', '/categories/' + categories.find(result => result.status === 201).data.id, { status: 204 });
+
+    const client = { name: 'Cliente', lastname: 'Prueba', dni: '87654321' };
+    const clients = await Promise.all(['a', 'b'].map(prefix => api('POST', '/clients', {
+        body: { ...client, email: prefix + randomUUID() + '@example.test' }
+    })));
+    assert.deepEqual(clients.map(result => result.status).sort(), [201, 409]);
+    await api('DELETE', '/clients/' + clients.find(result => result.status === 201).data.id, { status: 204 });
+    console.log('OK: Una sola categoría y un solo cliente cuando se repiten el nombre o DNI al mismo tiempo.');
+}
 
 {
     const { id } = await product();
