@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping({"/api/sales", "/api/v1/ventas"})
+@RequestMapping("/api/sales")
 @RequiredArgsConstructor
 public class SaleController {
 

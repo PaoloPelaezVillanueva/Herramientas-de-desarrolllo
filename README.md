@@ -112,9 +112,7 @@ docker run -d \
 
 ## 📋 6. Catálogo de Endpoints REST (API Reference)
 
-> **Nota de compatibilidad:** La API escucha tanto en los endpoints base estándar (`/api/...`) como en las rutas versionadas solicitadas en la rúbrica del curso (`/api/v1/...`).
-
-### 6.1. Módulo Clientes (`/api/clients` o `/api/v1/clientes`)
+### 6.1. Módulo Clientes (`/api/clients`)
 
 | Método | Endpoint | Descripción | Status |
 | :--- | :--- | :--- | :---: |
@@ -137,7 +135,7 @@ docker run -d \
 
 ---
 
-### 6.2. Módulo Productos (`/api/products` o `/api/v1/productos`)
+### 6.2. Módulo Productos (`/api/products`)
 
 | Método | Endpoint | Descripción | Status |
 | :--- | :--- | :--- | :---: |
@@ -159,7 +157,7 @@ docker run -d \
 
 ---
 
-### 6.3. Módulo Ventas (`/api/sales` o `/api/v1/ventas`)
+### 6.3. Módulo Ventas (`/api/sales`)
 
 | Método | Endpoint | Descripción | Status |
 | :--- | :--- | :--- | :---: |
