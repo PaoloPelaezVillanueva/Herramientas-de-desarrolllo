@@ -2066,7 +2066,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "{{cashierToken}}",
+              "value": "{{adminToken}}",
               "type": "string"
             }
           ]

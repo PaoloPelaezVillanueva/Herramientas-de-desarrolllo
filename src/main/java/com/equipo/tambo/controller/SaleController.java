@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,15 +33,41 @@ public class SaleController {
     }
 
     @PostMapping
-    public ResponseEntity<SaleResponse> createSale(@Valid @RequestBody SaleRequest request) {
+    public ResponseEntity<SaleResponse> createSale(@Valid @RequestBody SaleRequest request,
+                                                    JwtAuthenticationToken authentication) {
+        requireOwnUser(request, authentication);
         SaleResponse sale = saleService.createSale(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(sale);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SaleResponse> updateSale(@PathVariable Long id, @Valid @RequestBody SaleRequest request) {
+    public ResponseEntity<SaleResponse> updateSale(@PathVariable Long id, @Valid @RequestBody SaleRequest request,
+                                                    JwtAuthenticationToken authentication) {
+        requireOwnSale(id, authentication);
+        requireOwnUser(request, authentication);
         return ResponseEntity.ok(saleService.updateSale(id, request));
+    }
+
+    private boolean isAdmin(JwtAuthenticationToken authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+    }
+
+    private void requireOwnUser(SaleRequest request, JwtAuthenticationToken authentication) {
+        String authenticatedUserId = authentication.getToken().getClaimAsString("userId");
+        if (!isAdmin(authentication) && !String.valueOf(request.getUser()).equals(authenticatedUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "La venta debe registrarse a nombre del usuario autenticado.");
+        }
+    }
+
+    private void requireOwnSale(Long id, JwtAuthenticationToken authentication) {
+        if (!isAdmin(authentication) && !String.valueOf(saleService.getById(id).getUser().getId())
+                .equals(authentication.getToken().getClaimAsString("userId"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "No se puede modificar una venta de otro usuario.");
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -51,12 +79,17 @@ public class SaleController {
     }
 
     @PutMapping("/{id}/details/{detailId}")
-    public ResponseEntity<SaleResponse> updateSaleDetail(@PathVariable Long id, @PathVariable Long detailId, @Valid @RequestBody SaleDetailRequest request) {
+    public ResponseEntity<SaleResponse> updateSaleDetail(@PathVariable Long id, @PathVariable Long detailId,
+                                                          @Valid @RequestBody SaleDetailRequest request,
+                                                          JwtAuthenticationToken authentication) {
+        requireOwnSale(id, authentication);
         return ResponseEntity.ok(saleService.updateSaleDetail(id, detailId, request));
     }
 
     @DeleteMapping("/{id}/details/{detailId}")
-    public ResponseEntity<Void> deleteSaleDetail(@PathVariable Long id, @PathVariable Long detailId) {
+    public ResponseEntity<Void> deleteSaleDetail(@PathVariable Long id, @PathVariable Long detailId,
+                                                  JwtAuthenticationToken authentication) {
+        requireOwnSale(id, authentication);
         saleService.deleteSaleDetail(id, detailId);
         return ResponseEntity.noContent().build();
     }

@@ -36,6 +36,13 @@ public class SaleDetailServiceImpl implements SaleDetailService {
                         "No se encontró el producto con ID " + id));
     }
 
+    private void requireActive(Product product) {
+        if (!Boolean.TRUE.equals(product.getActive())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "No se puede vender el producto inactivo '" + product.getName() + "'.");
+        }
+    }
+
     private void adjustStock(Product product, long unitsToDeduct) {
         long remaining = product.getStock() - unitsToDeduct;
         if (remaining < 0) {
@@ -53,6 +60,7 @@ public class SaleDetailServiceImpl implements SaleDetailService {
     @Override
     public void createSaleDetail(Sale sale, @Valid SaleDetailRequest request) {
         Product product = getProduct(request.getProduct());
+        requireActive(product);
         adjustStock(product, request.getQuantity());
         SaleDetail detail = new SaleDetail();
         setDetail(detail, product, request.getQuantity());
@@ -81,8 +89,12 @@ public class SaleDetailServiceImpl implements SaleDetailService {
         Product previous = detail.getProduct();
         Product product = getProduct(request.getProduct());
         if (previous.getId().equals(product.getId())) {
+            if (request.getQuantity() > detail.getQuantity()) {
+                requireActive(product);
+            }
             adjustStock(product, request.getQuantity() - detail.getQuantity());
         } else {
+            requireActive(product);
             adjustStock(product, request.getQuantity());
             adjustStock(previous, -detail.getQuantity());
         }

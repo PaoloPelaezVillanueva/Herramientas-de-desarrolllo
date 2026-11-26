@@ -53,4 +53,27 @@ class SaleDetailServiceImplTest {
         assertTrue(sale.getDetails().isEmpty());
         verify(productRepository, never()).save(product);
     }
+
+    @Test
+    void rejectsSaleOfInactiveProductWithoutChangingStock() {
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Bebida retirada");
+        product.setStock(18);
+        product.setActive(false);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
+        SaleDetailRequest request = new SaleDetailRequest();
+        request.setProduct(1L);
+        request.setQuantity(1L);
+        Sale sale = new Sale();
+
+        ResponseStatusException error = assertThrows(ResponseStatusException.class,
+                () -> service.createSaleDetail(sale, request));
+
+        assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+        assertEquals(18, product.getStock());
+        assertTrue(sale.getDetails().isEmpty());
+        verify(productRepository, never()).save(product);
+    }
 }
