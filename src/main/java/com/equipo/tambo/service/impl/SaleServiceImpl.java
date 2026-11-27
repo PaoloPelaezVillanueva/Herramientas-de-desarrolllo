@@ -76,6 +76,8 @@ public class SaleServiceImpl implements SaleService {
         sale.setUser(user);
         sale.setDate(LocalDateTime.now());
 
+        saleDetailService.validateStock(request.getDetails());
+
         request.getDetails().forEach(d -> saleDetailService.createSaleDetail(sale, d));
 
         recalculateTotal(sale);

@@ -5,6 +5,7 @@ import com.equipo.tambo.dto.UserResponse;
 import com.equipo.tambo.entity.Role;
 import com.equipo.tambo.entity.User;
 import com.equipo.tambo.repository.RoleRepository;
+import com.equipo.tambo.repository.SaleRepository;
 import com.equipo.tambo.repository.UserRepository;
 import com.equipo.tambo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final SaleRepository saleRepository;
 
     @Override
     public List<UserResponse> listUsers() {
@@ -69,6 +71,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Long id) {
         User user = getUser(id);
+
+        if(saleRepository.existsByUserId(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se puede eliminar el usuario porque tiene ventas asociadas"
+            );
+        }
+
         userRepository.delete(user);
     }
 
