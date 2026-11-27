@@ -11,4 +11,5 @@ public interface SaleDetailService {
     void replaceDetails(Sale sale, List<SaleDetailRequest> requests);
     void updateSaleDetail(Sale sale, Long id, SaleDetailRequest request);
     void deleteSaleDetail(Sale sale, Long id);
+    void validateStock(List<SaleDetailRequest> requests);
 }

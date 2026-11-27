@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -113,5 +115,36 @@ public class SaleDetailServiceImpl implements SaleDetailService {
         productRepository.save(product);
 
         sale.getDetails().remove(saleDetail);
+    }
+
+    @Override
+    public void validateStock(List<SaleDetailRequest> requests) {
+        Map<Long, Long> requestedByProduct = new LinkedHashMap<>();
+
+        for (SaleDetailRequest request : requests) {
+            requestedByProduct.merge(request.getProduct(), request.getQuantity(), Long::sum);
+        }
+
+        for (Map.Entry<Long, Long> entry : requestedByProduct.entrySet()) {
+            Long productId = entry.getKey();
+            Long requestedQuantity = entry.getValue();
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "No se encontró el producto con ID " + productId
+                    ));
+
+            long availableStock = product.getStock();
+
+            if (availableStock < requestedQuantity) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Stock insuficiente para '" + product.getName()
+                                + "'. Stock disponible: " + availableStock
+                                + ". Cantidad solicitada: " + requestedQuantity
+                );
+            }
+        }
     }
 }
