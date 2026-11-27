@@ -103,21 +103,30 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 
   deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     needs: package
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     defaults:
       run:
-        shell: bash
+        shell: powershell
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
       - name: Compute image name
         id: img
-        run: echo "name=${{ env.REGISTRY }}/$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]'):${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-      - name: Apply manifests
         run: |
-          sed "s|IMAGE_PLACEHOLDER|${{ steps.img.outputs.name }}|" k8s/deployment.yaml | kubectl --context docker-desktop apply -f -
+          $image = "$env:REGISTRY/$($env:IMAGE_NAME.ToLowerInvariant())"
+          $tag = $env:GITHUB_SHA.Substring(0, 7)
+          "name=${image}:${tag}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      - name: Apply manifests
+        env:
+          DEPLOY_IMAGE: ${{ steps.img.outputs.name }}
+        run: |
+          $manifest = (Get-Content -LiteralPath k8s/deployment.yaml -Raw).Replace('IMAGE_PLACEHOLDER', $env:DEPLOY_IMAGE)
+          $manifestPath = Join-Path $env:RUNNER_TEMP "deployment-$env:GITHUB_SHA.yaml"
+          Set-Content -LiteralPath $manifestPath -Value $manifest -Encoding utf8
+          kubectl --context docker-desktop apply -f $manifestPath
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           kubectl --context docker-desktop apply -f k8s/service.yaml
       - name: Wait for rollout
         run: kubectl --context docker-desktop rollout status deployment/demo --timeout=180s
